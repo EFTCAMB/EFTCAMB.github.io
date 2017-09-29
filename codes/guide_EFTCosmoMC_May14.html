@@ -1,0 +1,429 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+ <title>Guide to EFTCosmoMC_May14</title>
+<meta charset="utf-8">
+<link type="text/css" rel="stylesheet" href="../styles/style.css" />
+</head>
+<body>
+        <div id="wrap">
+            <div id="top">
+
+
+<div id="div_justify"><b><span style="font-size: 15px;color: ƒfon">
+<center>
+<div class="navbar">
+<a id="nav-home" class="#active" href="./index.html">HOME&nbsp;&nbsp;&nbsp;
+</a>
+||
+<a id="nav-about" href="./index.html#about">&nbsp;&nbsp;&nbsp;ABOUT EFTCAMB&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-code" href="./download.html">&nbsp;&nbsp;&nbsp;CODE&nbsp;&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-team" href="./team.html">&nbsp;&nbsp;&nbsp;TEAM&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./works.html">&nbsp;&nbsp;&nbsp;WORKS&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./examples.html">&nbsp;&nbsp;&nbsp;EXAMPLES&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./index.html#contact">&nbsp;&nbsp;&nbsp;CONTACT&nbsp;&nbsp;&nbsp;</a>
+</div>
+</center>
+</span></b></div>
+<h2></h2>
+<div class="line"></div>
+<h1></h1>
+<center> </span><span style="font-size: 40px">Guide to  </span> <span style="color: #0b8bbb;font-size: 40px">EFTCosmoMC_May14</span>
+</center>
+
+<h1></h1>
+<div id="top">
+    <h3></h3>
+    <div id="top-pic"><img src="../images/EFTCosmomC_V1.png" alt="" /></div>
+</div>
+<h3></h3>
+
+<h2></h2>
+<div class="line"></div><br>
+
+<b><span style="font-size: 15px; color: red">There might exist some typos in this guide, please check it carefully with our original source codes.</span></b>
+<b><span style="font-size: 15px; color: red">If you encounter any problems during your modifications, please contact us.</span></b>
+
+<h2></h2>
+<div class="line"></div><br><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Add: <b>EFT_params.ini</b>(In the root folder)<br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>params_CMB.paramnames</b>(In the root folder)<br><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Add: After "fdm           \epsilon_0 f_d    #CosmoRec dark matter annihilation parameter, 0910.3663"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+EFTw0         w_0^{\rm EFT}						# EFTCOSMOMC: EFTCAMB parameter (num 16)<br>
+EFTwa         w_a^{\rm EFT}						# EFTCOSMOMC: EFTCAMB parameter (num 17)<br>
+EFTOmega0     \Omega_0^{\rm EFT}				# EFTCOSMOMC: EFTCAMB parameter (num 18)<br>
+EFTOmegaExp   n^{\rm EFT}						# EFTCOSMOMC: EFTCAMB parameter (num 19)<br>
+EFTAlpha10	  \alpha_0^{(1) {\rm EFT}}			# EFTCOSMOMC: EFTCAMB parameter (num 20)<br>
+EFTAlpha1Exp  \alpha_{\rm exp}^{(1) {\rm EFT}}	# EFTCOSMOMC: EFTCAMB parameter (num 21)<br>
+EFTAlpha20	  \alpha_0^{(2) {\rm EFT}}			# EFTCOSMOMC: EFTCAMB parameter (num 22)<br>
+EFTAlpha2Exp  \alpha_{\rm exp}^{(2) {\rm EFT}}	# EFTCOSMOMC: EFTCAMB parameter (num 23)<br>
+EFTAlpha30	  \alpha_0^{(3) {\rm EFT}}			# EFTCOSMOMC: EFTCAMB parameter (num 24)<br>
+EFTAlpha3Exp  \alpha_{\rm exp}^{(3) {\rm EFT}}	# EFTCOSMOMC: EFTCAMB parameter (num 25)<br>
+EFTAlpha40	  \alpha_0^{(4) {\rm EFT}}			# EFTCOSMOMC: EFTCAMB parameter (num 26)<br>
+EFTAlpha4Exp  \alpha_{\rm exp}^{(4) {\rm EFT}}	# EFTCOSMOMC: EFTCAMB parameter (num 27)<br>
+EFTAlpha50	  \alpha_0^{(5) {\rm EFT}}			# EFTCOSMOMC: EFTCAMB parameter (num 28)<br>
+EFTAlpha5Exp  \alpha_{\rm exp}^{(5) {\rm EFT}}	# EFTCOSMOMC: EFTCAMB parameter (num 29)<br>
+EFTAlpha60	  \alpha_0^{(6) {\rm EFT}}			# EFTCOSMOMC: EFTCAMB parameter (num 30)<br>
+EFTAlpha6Exp  \alpha_{\rm exp}^{(6) {\rm EFT}}	# EFTCOSMOMC: EFTCAMB parameter (num 31)<br>
+EFTLogB0      {\rm Log}_{10}(B_0)				# EFTCOSMOMC: EFTCAMB parameter (num 32)<br>
+</span></div><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Add: <b>params_CMB_EFT.ini</b>(In the root/batch1 folder)<br><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Add: <b>common_batch1_EFT.ini</b>(In the root/batch1 folder)<br><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>Makefile</b>(In the root/source folder)<br><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Replace:<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+#If you want to use the ppf module, change equations_ppf to equations<br>
+#and halofit_ppf to halofit also comment out wa_ppf in CMB_Cls_simple.f90<br>
+# EFTCOSMOMC MOD START: make COSMOMC recognize the EFT equation file.<br>
+camb:<br>
+	cd ../camb && \<br>
+	$(MAKE) --file=Makefile_main libcamb_$(RECOMBINATION).a \<br>
+	RECOMBINATION=$(RECOMBINATION) EQUATIONS=equations_EFT NONLINEAR=halofit<br>
+</span><span style="font-size: 15px; color: red">
+#	RECOMBINATION=$(RECOMBINATION) EQUATIONS=equations_ppf NONLINEAR=halofit_ppf !EFTcosmomc MOD: Original code<br>
+</span><span style="font-size: 15px; color: black">
+# EFTCOSMOMC MOD END.<br>
+</span></div><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>settings.f90</b>(In the root/source folder)<br><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Replace: After "integer, parameter :: max_data_params = 100"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+    ! EFTCOSMOMC MOD START: increase the number of theory parameters<br>
+</span><span style="font-size: 15px; color: red">
+    !integer, parameter :: max_theory_params = 30 !Original code<br>
+</span><span style="font-size: 15px; color: black">
+    integer, parameter :: max_theory_params = 47<br>
+    ! EFTCOSMOMC MOD END.<br>
+</span></div><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>params_CMB.f90</b>(In the root/source folder)<br><br>
+
+<div>
+  <span style="font-size: 15px;">
+  <b>::::: subroutine TP_Init(this, Ini, Names) :::::</b><br>
+  Replace: After "character(LEN=Ini_max_string_len) prior"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+    ! EFTCOSMOMC MOD START:<br>
+</span><span style="font-size: 15px; color: red">
+    ! call SetTheoryParameterNumbers(15,6) !Original code<br>
+</span><span style="font-size: 15px; color: black">
+    call SetTheoryParameterNumbers(32,6)<br>
+    ! EFTCOSMOMC MOD END.<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  <b>::::: subroutine SetForH(Params,CMB,H0, firsttime,error) :::::</b><br>
+  Add: Before "CMB%h = CMB%H0/100"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+        ! EFTCOSMOMC MOD START:<br>
+        CMB%EFTw0 = Params(16)<br>
+        CMB%EFTwa = Params(17)<br>
+        CMB%EFTOmega0     = Params(18)<br>
+        CMB%EFTOmegaExp   = Params(19)<br>
+        CMB%EFTAlpha10    = Params(20)<br>
+        CMB%EFTAlpha1Exp  = Params(21)<br>
+        CMB%EFTAlpha20    = Params(22)<br>
+        CMB%EFTAlpha2Exp  = Params(23)<br>
+        CMB%EFTAlpha30    = Params(24)<br>
+        CMB%EFTAlpha3Exp  = Params(25)<br>
+        CMB%EFTAlpha40    = Params(26)<br>
+        CMB%EFTAlpha4Exp  = Params(27)<br>
+        CMB%EFTAlpha50    = Params(28)<br>
+        CMB%EFTAlpha5Exp  = Params(29)<br>
+        CMB%EFTAlpha60    = Params(30)<br>
+        CMB%EFTAlpha6Exp  = Params(31)<br>
+        CMB%EFTB0 = 10**Params(32)<br>
+        ! EFTCOSMOMC MOD END.<br>
+</span></div><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>cmbtypes.f90</b>(In the root/source folder)<br><br>
+
+<div>
+  <span style="font-size: 15px;">
+  <b>::::: module cmbtypes :::::</b><br>
+  Add: After "logical :: bbn_consistency = .true. !JH"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+    ! EFTCOSMOMC MOD START: store the values of the EFT model selection flags.<br>
+    integer :: EFTflag<br>
+    integer :: EFTwDE<br>
+    integer :: PureEFTmodelOmega<br>
+    integer :: PureEFTmodelAlpha1, PureEFTmodelAlpha2, PureEFTmodelAlpha3<br>
+    integer :: PureEFTmodelAlpha4, PureEFTmodelAlpha5, PureEFTmodelAlpha6<br>
+    integer :: DesignerEFTmodel<br>
+    integer :: MatchingEFTmodel<br>
+    ! EFTCOSMOMC MOD END.<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  <b>::::: Type, extends(TTheoryParams) :: CMBParams :::::</b><br>
+  Add: After "real(mcp) reserved(5)"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+        ! EFTCOSMOMC MOD START: add EFTCAMB parameters to CMBParams<br>
+        real(mcp) :: EFTw0, EFTwa<br>
+        real(mcp) :: EFTOmega0, EFTOmegaExp<br>
+        real(mcp) :: EFTAlpha10, EFTAlpha1Exp, EFTAlpha20, EFTAlpha2Exp<br>
+        real(mcp) :: EFTAlpha30, EFTAlpha3Exp, EFTAlpha40, EFTAlpha4Exp<br>
+        real(mcp) :: EFTAlpha50, EFTAlpha5Exp, EFTAlpha60, EFTAlpha6Exp<br>
+        real(mcp) :: EFTB0<br>
+        ! EFTCOSMOMC MOD END.<br>
+</span></div><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>calclike.f90</b>(In the root/source folder)<br><br>
+
+<div>
+  <span style="font-size: 15px;">
+  <b>::::: function GetLogLike(Params) :::::</b><br>
+  Add: After "function GetLogLike(Params) !Get -Ln(Likelihood) for chains"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+    ! EFTCOSMOMC MOD START: use the EFT modules<br>
+    use EFTstability<br>
+    use EFTreturntoGR<br>
+    use EFTDesigner<br>
+    ! EFTCOSMOMC MOD END.<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Add: After " Type(LikeCalculator) :: Calc"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+    ! EFTCOSMOMC MOD START: define stuff<br>
+    integer :: EFTstabilityResult<br>
+    logical :: DesignerSucces<br>
+    Type(CAMBParams) :: EFT_CP_Temp<br>
+    ! EFTCOSMOMC MOD END.<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Add: After "Calc%changeMask(1:num_params) = Params%Info%lastParamArray(1:num_params)/=Params%P(1:num_params)"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+    ! EFTCOSMOMC MOD START: run the stability check for the choosen parameter.<br>
+    call CMBToCAMB(CMB,EFT_CP_Temp)<br>
+    call CAMBParams_Set(EFT_CP_Temp)<br>
+    ! 1) Call designer codes.<br>
+<br>
+    !print*, CMB%EFTw0, CMB%EFTwa, CMB%H0, CMB%omb*(CMB%h)**2, CMB%omc*(CMB%h)**2, CMB%omv<br>
+<br>
+    if (EFTflag==2.and.DesignerEFTmodel==1) then<br>
+    write(*,*) 'EFTCAMB: Calling f(R) background designer code'<br>
+    call Designer_fR_Background(DesignerSucces)<br>
+        if (.not.DesignerSucces) then<br>
+        GetLogLike=LogZero<br>
+        return<br>
+        end if<br>
+    end if<br>
+    ! 2) Check for the stability of the theory.<br>
+    if (EFTflag/=0) then<br>
+    write(*,*) 'EFTCAMB: Checking the stability of the theory.'<br>
+    call EFTCheck_Stability(EFTstabilityResult)<br>
+        if (EFTstabilityResult==0) then<br>
+        GetLogLike=LogZero<br>
+        return<br>
+        end if<br>
+    end if<br>
+    ! 3) Checks the return to GR of the theory. <br>
+    if (EFTflag/=0) then<br>
+     call EFTCheckReturnToGR<br>
+    end if<br>
+    ! EFTCOSMOMC MOD END.<br>
+</span></div><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>driver.F90</b>(In the root/source folder)<br><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Add: After "use DefineParameterization"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+    !EFTCOSMOMC MOD START: use EFT modules<br>
+    use EFTdef<br>
+    !EFTCOSMOMC MOD END.<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Add: After "stop_on_error = Ini_Read_logical('stop_on_error',stop_on_error)" Before "Ini_fail_on_not_found = .true."<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+    ! EFTCOSMOMC MOD START: read here EFT model selection flags and store them inside cmbtypes<br>
+    EFTflag = Ini_Read_Int('EFTflag',0)<br>
+<br>
+    EFTwDE = Ini_Read_Int('EFTwDE',0)<br>
+<br>
+    PureEFTmodelOmega  = Ini_Read_Int('PureEFTmodelOmega',0)<br>
+    PureEFTmodelAlpha1 = Ini_Read_Int('PureEFTmodelAlpha1',0)<br>
+    PureEFTmodelAlpha2 = Ini_Read_Int('PureEFTmodelAlpha2',0)<br>
+    PureEFTmodelAlpha3 = Ini_Read_Int('PureEFTmodelAlpha3',0)<br>
+    PureEFTmodelAlpha4 = Ini_Read_Int('PureEFTmodelAlpha4',0)<br>
+    PureEFTmodelAlpha5 = Ini_Read_Int('PureEFTmodelAlpha5',0)<br>
+    PureEFTmodelAlpha6 = Ini_Read_Int('PureEFTmodelAlpha6',0)<br>
+<br>
+    DesignerEFTmodel = Ini_Read_Int('DesignerEFTmodel',0)<br>
+    MatchingEFTmodel = Ini_Read_Int('MatchingEFTmodel',0)<br>
+<br>
+    EFTCAMBuseinCOSMOMC = 0<br>
+    ! EFTCOSMOMC MOD END.<br>
+</span></div><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>CMB_Cls_simple.f90</b>(In the root/source folder)<br><br>
+
+<div>
+  <span style="font-size: 15px;">
+  <b>::::: module CMB_Cls :::::</b><br>
+  Remove: ppf modules<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+    ! EFTCOSMOMC MOD START: remove ppf<br>
+    AccuracyBoost,  Cl_scalar, Cl_tensor, Cl_lensed, outNone, w_lam,&<br>
+</span><span style="font-size: 15px; color: red">
+    !AccuracyBoost,  Cl_scalar, Cl_tensor, Cl_lensed, outNone, w_lam, wa_ppf,& ! Original code<br>
+</span><span style="font-size: 15px; color: black">
+    ! EFTCOSMOMC MOD END.<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  <b>::::: subroutine CMBToCAMB(CMB,P) :::::</b><br>
+  Remove: After "w_lam = CMB%w"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+    ! EFTCOSMOMC MOD START: remove ppf<br>
+</span><span style="font-size: 15px; color: red">
+    !wa_ppf = CMB%wa ! Original code<br>
+</span><span style="font-size: 15px; color: black">
+    ! EFTCOSMOMC MOD END:<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Add: After "P%Num_Nu_Massless = CMB%nnu"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+   ! EFTCOSMOMC MOD START: pass to camb the EFT parameters<br>
+    ! Background parameters:<br>
+    P%EFTw0 = CMB%EFTw0<br>
+    P%EFTwa = CMB%EFTwa<br>
+    ! Pure EFT:<br>
+    P%EFTOmega0   = CMB%EFTOmega0<br>
+    P%EFTOmegaExp = CMB%EFTOmegaExp<br>
+    P%EFTAlpha10  = CMB%EFTAlpha10<br>
+    P%EFTAlpha1Exp= CMB%EFTAlpha1Exp<br>
+    P%EFTAlpha20  = CMB%EFTAlpha20<br>
+    P%EFTAlpha2Exp= CMB%EFTAlpha2Exp<br>
+    P%EFTAlpha30  = CMB%EFTAlpha30<br>
+    P%EFTAlpha3Exp= CMB%EFTAlpha3Exp<br>
+    P%EFTAlpha40  = CMB%EFTAlpha40<br>
+    P%EFTAlpha4Exp= CMB%EFTAlpha4Exp<br>
+    P%EFTAlpha50  = CMB%EFTAlpha50<br>
+    P%EFTAlpha5Exp= CMB%EFTAlpha5Exp<br>
+    P%EFTAlpha60  = CMB%EFTAlpha60<br>
+    P%EFTAlpha6Exp= CMB%EFTAlpha6Exp<br>
+    ! Matching EFT:<br>
+    P%EFTB0 = CMB%EFTB0<br>
+    ! EFTCOSMOMC MOD END.<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  <b>::::: subroutine InitCAMBParams(P) :::::</b><br>
+  Remove: After "w_lam = -1"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+    ! EFTCOSMOMC MOD START: remove ppf<br>
+</span><span style="font-size: 15px; color: red">
+    !wa_ppf = 0._dl ! Original code<br>
+</span><span style="font-size: 15px; color: black">
+    ! EFTCOSMOMC MOD END.<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Add: After "P%Transfer%k_per_logint=0"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+    ! EFTCOSMOMC MOD START: pass model selection flag to the camb<br>
+<br>
+    P%EFTflag = Ini_Read_Int('EFTflag',0)<br>
+<br>
+    P%EFTwDE = Ini_Read_Int('EFTwDE',0)<br>
+<br>
+    P%PureEFTmodelOmega  = Ini_Read_Int('PureEFTmodelOmega',0)<br>
+    P%PureEFTmodelAlpha1 = Ini_Read_Int('PureEFTmodelAlpha1',0)<br>
+    P%PureEFTmodelAlpha2 = Ini_Read_Int('PureEFTmodelAlpha2',0)<br>
+    P%PureEFTmodelAlpha3 = Ini_Read_Int('PureEFTmodelAlpha3',0)<br>
+    P%PureEFTmodelAlpha4 = Ini_Read_Int('PureEFTmodelAlpha4',0)<br>
+    P%PureEFTmodelAlpha5 = Ini_Read_Int('PureEFTmodelAlpha5',0)<br>
+    P%PureEFTmodelAlpha6 = Ini_Read_Int('PureEFTmodelAlpha6',0)<br>
+<br>
+    P%DesignerEFTmodel = Ini_Read_Int('DesignerEFTmodel',1)<br>
+<br>
+    P%MatchingEFTmodel = Ini_Read_Int('MatchingEFTmodel',1)<br>
+<br>
+    ! EFTCOSMOMC MOD END.<br>
+</span></div><br>
+
+<h2></h2>
+<div class="line"></div>
+<h2></h2>
+<!--end wrap-->
+<div id="spacing"></div>
+<!--hack for ie6 and ie7-->
+<center>
+    Re-compile and Make it.
+</div>
+</center>
+<div class="line"></div>
+<center>
+    <div><a href="./guide_EFTCosmoMC.html"> -  previous page - </a>
+
+</div>
+
+</center>
+
+
+</BODY>
+</HTML>

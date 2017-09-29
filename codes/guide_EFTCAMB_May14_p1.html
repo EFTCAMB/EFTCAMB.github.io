@@ -1,0 +1,1229 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+ <title>Guide to EFTCAMB_May14_p1</title>
+<meta charset="utf-8">
+<link type="text/css" rel="stylesheet" href="../styles/style.css" />
+</head>
+
+<body>
+        <div id="wrap">
+
+
+<div id="div_justify"><b><span style="font-size: 15px;color: ƒfon">
+<center>
+<div class="navbar">
+<a id="nav-home" class="#active" href="./index.html">HOME&nbsp;&nbsp;&nbsp;
+</a>
+||
+<a id="nav-about" href="./index.html#about">&nbsp;&nbsp;&nbsp;ABOUT EFTCAMB&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-code" href="./download.html">&nbsp;&nbsp;&nbsp;CODE&nbsp;&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-team" href="./team.html">&nbsp;&nbsp;&nbsp;TEAM&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./works.html">&nbsp;&nbsp;&nbsp;WORKS&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./examples.html">&nbsp;&nbsp;&nbsp;EXAMPLES&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./index.html#contact">&nbsp;&nbsp;&nbsp;CONTACT&nbsp;&nbsp;&nbsp;</a>
+</div>
+</center>
+</span></b></div>
+<h2></h2>
+<div class="line"></div>
+
+
+
+<h1></h1>
+<center> </span><span style="font-size: 40px">Guide to  </span> <span style="color: #0b8bbb;font-size: 40px">EFTCAMB_May14</span>
+</center>
+<h1></h1>
+
+<div id="top">
+    <h3></h3>
+    <div id="top-pic"><img src="../images/Image_Xi_V2.png"  alt="" /></div>
+</div>
+<h4></h4>
+
+<h2></h2>
+<div class="line"></div><br>
+
+<b><span style="font-size: 15px; color: red">There might exist some typos in this guide, please check it carefully with our original source codes.</span></b>
+<b><span style="font-size: 15px; color: red">If you encounter any problems during your modifications, please contact us.</span></b>
+
+<h2></h2>
+<div class="line"></div><br><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Add: <b>EFT_main.f90</b><br>
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Add: <b>EFTstabilitySpace.f90</b><br>
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>Makefile_main</b><br><br>
+<div>
+  <span style="font-size: 15px;" >Replace:</span>
+</div>
+<div><span style="font-size: 15px; color: black">EQUATIONS     ?= equations_EFT</span><br>
+<span style="font-size: 15px; color: red">
+#... Original:<br>
+#EQUATIONS     ?= equations
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;" >Add: After</span>
+  <span style="font-size: 15px; color: red">"#DRIVER       ?= tester.f90"</span>
+</div>
+<div><span style="font-size: 15px; color: black"># EFTCAMB: optional program to test stability.<br>
+#DRIVER       ?= EFTstabilitySpace.f90<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;" >Replace:</span>
+</div>
+<div><span style="font-size: 15px; color: black">
+# EFTCAMB MOD START<br>
+CAMBOBJ       = constants.o utils.o $(EXTCAMBFILES) subroutines.o inifile.o $(POWERSPECTRUM).o $(RECOMBINATION).o \<br>
+	$(REIONIZATION).o modules.o bessels.o EFT_main.o $(EQUATIONS).o $(NONLINEAR).o lensing.o $(BISPECTRUM).o cmbmain.o camb.o<br>
+</span>
+<span style="font-size: 15px; color: red">
+#... Original:<br>
+#CAMBOBJ       = constants.o utils.o $(EXTCAMBFILES) subroutines.o inifile.o $(POWERSPECTRUM).o $(RECOMBINATION).o \<br>
+#	$(REIONIZATION).o modules.o bessels.o $(EQUATIONS).o $(NONLINEAR).o lensing.o $(BISPECTRUM).o cmbmain.o camb.o</span><br>
+<span style="font-size: 15px; color: black">
+# EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>params.ini</b><br><br>
+
+<div>
+  <span style="font-size: 15px;" >Add: Before</span>
+  <span style="font-size: 15px; color: red">"#Parameters for CAMB"</span>
+</div>
+<div><span style="font-size: 15px; color: black">
+####### Model selection flags for EFTCAMB #######<br>
+#	 EFT flags: set up in which mode EFTCAMB is used.<br>
+# 	 We refer to the documentation (EFTCAMB:numerical notes) for a thorough<br>
+# 	 explanation of the effect of these flags.<br>
+#<br>
+# 1) Main EFT flag:<br>
+#      EFTflag = 0 : GR code. Every EFT modification is ignored.<br>
+#      EFTflag = 1 : Pure EFT code.<br>
+#      EFTflag = 2 : Designer matching EFT.<br>
+#      EFTflag = 3 : Matching EFT.<br>
+<br>
+EFTflag = 0<br>
+<br>
+# 2) Background Dark Energy equation of state flag:<br>
+#      EFTwDE = 0 : Cosmological constant<br>
+#      EFTwDE = 1 : DE with constant Eos determined by EFTw0<br>
+#      EFTwDE = 2 : CPL parametrization<br>
+<br>
+EFTwDE = 1<br>
+<br>
+# 3) Pure EFT model selection flag:<br>
+#	 The following structure applies to every operator and can be specified for every operatori<br>
+#	 separately.<br>
+#<br>
+#      PureEFTmodel___ = 0 : Zero (operator ignored)	<br>
+#      PureEFTmodel___ = 1 : Constant model<br>
+#      PureEFTmodel___ = 2 : Linear model<br>
+#      PureEFTmodel___ = 3 : Power law model<br>
+#      PureEFTmodel___ = 4 : Exponential model<br>
+#      PureEFTmodel___ = 5 : User defined<br>
+<br>
+PureEFTmodelOmega  = 2<br>
+PureEFTmodelAlpha1 = 0<br>
+PureEFTmodelAlpha2 = 0<br>
+PureEFTmodelAlpha3 = 0<br>
+PureEFTmodelAlpha4 = 0<br>
+PureEFTmodelAlpha5 = 0<br>
+PureEFTmodelAlpha6 = 0<br>
+<br>
+# 4) Designer matching EFT model selection flag:<br>
+#      DesignerEFTmodel = 1 : designer f(R)<br>
+<br>
+DesignerEFTmodel = 1<br>
+<br>
+# 5) Matching EFT model selection flag:<br>
+#      No model implemented so far.<br>
+<br>
+MatchingEFTmodel = 1<br>
+<br>
+####### Model parameters for EFTCAMB #######<br>
+<br>
+#	Notice that if the model is not selected via the model selection flags then<br>
+#	the values of the parameters are automatically ignored.<br>
+<br>
+#  1) Background Dark Energy equation of state parameters:<br>
+<br>
+EFTw0 = -1.0001<br>
+EFTwa = -0.3<br>
+<br>
+#  2) Pure EFT parameters:<br>
+<br>
+EFTOmega0 = 0.001<br>
+EFTOmegaExp = 0<br>
+<br>
+EFTAlpha10 = 0.1<br>
+EFTAlpha1Exp = 0<br>
+<br>
+EFTAlpha20 = 0.1<br>
+EFTAlpha2Exp = 0<br>
+<br>
+EFTAlpha30 = 0.001<br>
+EFTAlpha3Exp = 0<br>
+<br>
+EFTAlpha40 = 0.001<br>
+EFTAlpha4Exp = 0<br>
+<br>
+EFTAlpha50 = 0.1<br>
+EFTAlpha5Exp = 0<br>
+<br>
+EFTAlpha60 = 0.1<br>
+EFTAlpha6Exp = 0<br>
+<br>
+#  3) Designer matching parameters:<br>
+#      	 Model 1: designer f(R) theories<br>
+<br>
+EFTB0 = 1<br>
+<br>
+####### Parameters for CAMB #######
+</span></div><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>cmbmain.f90</b><br><br>
+
+<div>
+  <span style="font-size: 15px;">
+  ::::: module CAMBmain :::::<br>
+  Add: after "use Errors"<br>
+  </span></div>
+<div><span style="font-size: 15px; color: black">
+    ! EFTCAMB MOD START<br>
+    use EFTdef<br>
+    use EFTSTability<br>
+    use EFTreturntoGR<br>
+    ! EFTCAMB MOD END
+</div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  ::::: subroutine cmbmain :::::<br>
+  Add: after "integer q_ix"<br>
+  </span></div>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START<br>
+	integer EFTstabilityResult<br>
+	logical DesignerSucces<br>
+! EFTCAMB MOD END
+</div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Add: after "WantLateTime =  CP%DoLensing .or. num_redshiftwindows > 0"<br>
+  </span></div>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START<br>
+    if (EFTCAMBuseinCOSMOMC==1) then<br>
+	 ! 1) Call designer codes.<br>
+	 if (CP%EFTflag==2.and.CP%DesignerEFTmodel==1) then<br>
+	 write(*,*) 'EFTCAMB: Calling f(R) background designer code'<br>
+     call Designer_fR_Background(DesignerSucces)<br>
+        if (.not.DesignerSucces) then<br>
+        write(*,*) 'EFTCAMB: wrong background DE parameters.'<br>
+        stop<br>
+        end if<br>
+     end if<br>
+	 ! 2) Check for the stability of the theory.<br>
+	 if (CP%EFTflag/=0) then<br>
+     write(*,*) 'EFTCAMB: Checking the stability of the theory.'<br>
+     call EFTCheck_Stability(EFTStabilityResult)<br>
+	  	if (EFTStabilityResult==0) stop 'EFTCAMB: Unstable theory.'<br>
+	 end if<br>
+	 ! 3) Checks the return to GR of the theory.<br>
+     if (CP%EFTflag/=0) then<br>
+      call EFTCheckReturnToGR<br>
+      if (DebugMsgs .and. Feedbacklevel > 0) write(*,*) 'EFTCAMB: a_pi=', EFTturnonpi<br>
+     end if<br>
+    end if<br>
+! EFTCAMB MOD END
+</div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  ::::: subroutine CalcScalarSources(EV,taustart) :::::<br>
+  Replace: after "ind=1"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: It's always nice to plot the evolution of perturbations in DE/MG models!<br>
+! In order to print the user needs to choose the scale by means of fixq and then turno on the<br>
+! flag that prints quantities from the output routine.<br>
+! It is suggested to run the code on just one core.<br>
+<br>
+       if (fixq/=0._dl) then<br>
+        tol1=tol/exp(AccuracyBoost-1)<br>
+        write(*,*) 'EFTCAMB: start printing.'<br>
+        call CreateTxtFile('Results/Debug_Output/Files/1_EFTfunctions.dat',1)<br>
+        call CreateTxtFile('Results/Debug_Output/Files/2_EFTBackground.dat',2)<br>
+        call CreateTxtFile('Results/Debug_Output/Files/3_FRW.dat',3)<br>
+        call CreateTxtFile('Results/Debug_Output/Files/4_PiFieldCoeff.dat',4)<br>
+        call CreateTxtFile('Results/Debug_Output/Files/5_PiFieldSol.dat',5)<br>
+        call CreateTxtFile('Results/Debug_Output/Files/6_EinsteinEq.dat',6)<br>
+        call CreateTxtFile('Results/Debug_Output/Files/7_MetricSol.dat',7)<br>
+        call CreateTxtFile('Results/Debug_Output/Files/8_Sources.dat',8)<br>
+        call CreateTxtFile('Results/Debug_Output/Files/9_MuGamma.dat',9)<br>
+<br>
+        call CreateTxtFile('Results/Debug_File/Debug.dat',10)<br>
+<br>
+          do j=1,10000<br>
+          tauend = taustart+(j-1)*(CP%tau0-taustart)/10000<br>
+          call GaugeInterface_EvolveScal(EV,tau,y,tauend,tol1,ind,c,w)<br>
+          yprime = 0<br>
+          call derivs(EV,EV%ScalEqsToPropagate,tau,y,yprime)<br>
+          call output(EV,y,j,tau,sources)<br>
+          end do<br>
+<br>
+         close(1)<br>
+         close(2)<br>
+         close(3)<br>
+         close(4)<br>
+         close(5)<br>
+         close(6)<br>
+         close(7)<br>
+         close(8)<br>
+         close(9)<br>
+         close(10)<br>
+         write(*,*) 'Stop printing'<br>
+         stop<br>
+      end if<br>
+<span style="font-size: 15px; color: red">
+<br>! Original code:<br>
+    !!Example code for plotting out variable evolution<br>
+    !!if (fixq/=0._dl) then<br>
+    !!    tol1=tol/exp(AccuracyBoost-1)<br>
+    !!    call CreateTxtFile('evolve_q005.txt',1)<br>
+    !!    do j=1,1000<br>
+    !!        tauend = taustart+(j-1)*(CP%tau0-taustart)/1000<br>
+    !!        call GaugeInterface_EvolveScal(EV,tau,y,tauend,tol1,ind,c,w)<br>
+    !!        yprime = 0<br>
+    !!        call derivs(EV,EV%ScalEqsToPropagate,tau,y,yprime)<br>
+    !!        adotoa = 1/(y(1)*dtauda(y(1)))<br>
+    !!        ddelta= (yprime(3)*grhoc+yprime(4)*grhob)/(grhob+grhoc)<br>
+    !!        delta=(grhoc*y(3)+grhob*y(4))/(grhob+grhoc)<br>
+    !!        growth= ddelta/delta/adotoa<br>
+    !!        write (1,'(7E15.5)') tau, delta, growth, y(3), y(4), y(EV%g_ix), y(1)<br>
+    !!    end do<br>
+    !!    close(1)<br>
+    !!    stop<br>
+    !!end if<br></span>
+<span style="font-size: 15px; color: black">
+! EFTCAMB MOD END
+</span>
+</div><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>Modify: modules.f90</b><br><br>
+
+<div>
+  <span style="font-size: 15px;">
+  ::::: type CAMBparams :::::<br>
+  Add: after "integer   :: Nu_mass_numbers(max_nu) !physical number per eigenstate"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START<br>
+	! 1) Definition of flags:<br>
+     integer :: EFTflag<br>
+     integer :: EFTwDE<br>
+     integer :: PureEFTmodelOmega<br>
+     integer :: PureEFTmodelAlpha1, PureEFTmodelAlpha2, PureEFTmodelAlpha3<br>
+     integer :: PureEFTmodelAlpha4, PureEFTmodelAlpha5, PureEFTmodelAlpha6<br>
+     integer :: DesignerEFTmodel<br>
+     integer :: MatchingEFTmodel<br>
+	! 2) Definition of model parameters:<br>
+     real(dl) :: EFTw0, EFTwa<br>
+     real(dl) :: EFTOmega0, EFTOmegaExp<br>
+     real(dl) :: EFTAlpha10, EFTAlpha1Exp, EFTAlpha20, EFTAlpha2Exp<br>
+     real(dl) :: EFTAlpha30, EFTAlpha3Exp, EFTAlpha40, EFTAlpha4Exp<br>
+     real(dl) :: EFTAlpha50, EFTAlpha5Exp, EFTAlpha60, EFTAlpha6Exp<br>
+     real(dl) :: EFTB0<br>
+! EFTCAMB MOD END<br>
+</span></div>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>inidriver.F90</b><br><br>
+
+<div>
+  <span style="font-size: 15px;">
+  ::::: program driver :::::<br>
+  Add: After "use F90_UNIX"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START<br>
+        use EFTdef<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Add: After "P%tcmb   = Ini_Read_Double('temp_cmb',COBE_CMBTemp)"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START<br>
+<br>
+    ! 1) Initialization of EFTCAMB flags.<br>
+<br>
+         P%EFTflag = Ini_Read_Int('EFTflag',0)<br>
+<br>
+         P%EFTwDE = Ini_Read_Int('EFTwDE',0)<br>
+<br>
+         P%PureEFTmodelOmega  = Ini_Read_Int('PureEFTmodelOmega',0)<br>
+         P%PureEFTmodelAlpha1 = Ini_Read_Int('PureEFTmodelAlpha1',0)<br>
+         P%PureEFTmodelAlpha2 = Ini_Read_Int('PureEFTmodelAlpha2',0)<br>
+         P%PureEFTmodelAlpha3 = Ini_Read_Int('PureEFTmodelAlpha3',0)<br>
+         P%PureEFTmodelAlpha4 = Ini_Read_Int('PureEFTmodelAlpha4',0)<br>
+         P%PureEFTmodelAlpha5 = Ini_Read_Int('PureEFTmodelAlpha5',0)<br>
+         P%PureEFTmodelAlpha6 = Ini_Read_Int('PureEFTmodelAlpha6',0)<br>
+<br>
+         P%DesignerEFTmodel = Ini_Read_Int('DesignerEFTmodel',1)<br>
+         P%MatchingEFTmodel = Ini_Read_Int('MatchingEFTmodel',1)<br>
+<br>
+    ! 2) Initialization of EFTCAMB model parameters.<br>
+<br>
+         P%EFTw0 = Ini_Read_Double('EFTw0')<br>
+         P%EFTwa = Ini_Read_Double('EFTwa')<br>
+<br>
+         P%EFTOmega0 = Ini_Read_Double('EFTOmega0')<br>
+         P%EFTOmegaExp = Ini_Read_Double('EFTOmegaExp')<br>
+         P%EFTAlpha10   = Ini_Read_Double('EFTAlpha10')<br>
+         P%EFTAlpha1Exp = Ini_Read_Double('EFTAlpha1Exp')<br>
+         P%EFTAlpha20   = Ini_Read_Double('EFTAlpha20')<br>
+         P%EFTAlpha2Exp = Ini_Read_Double('EFTAlpha2Exp')<br>
+         P%EFTAlpha30   = Ini_Read_Double('EFTAlpha30')<br>
+         P%EFTAlpha3Exp = Ini_Read_Double('EFTAlpha3Exp')<br>
+         P%EFTAlpha40   = Ini_Read_Double('EFTAlpha40')<br>
+         P%EFTAlpha4Exp = Ini_Read_Double('EFTAlpha4Exp')<br>
+         P%EFTAlpha50   = Ini_Read_Double('EFTAlpha50')<br>
+         P%EFTAlpha5Exp = Ini_Read_Double('EFTAlpha5Exp')<br>
+         P%EFTAlpha60   = Ini_Read_Double('EFTAlpha60')<br>
+         P%EFTAlpha6Exp = Ini_Read_Double('EFTAlpha6Exp')<br>
+<br>
+         P%EFTB0 = Ini_Read_Double('EFTB0')<br>
+<br>
+! EFTCAMB MOD END<br>
+</span></div>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Add: <b>equations_EFT.f90</b><br>
+or Modify: equations.f90 to get equations_EFT.f90<br><br>
+
+<div>
+  <span style="font-size: 15px;">
+  ::::: function dtauda(a) :::::<br>
+  Add: after " use LambdaGeneral"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START<br>
+        use EFTdef<br>
+        use EFTfunctions<br>
+! EFTCAMB MOD END<br>
+</span><div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Replace: after "grhoa2=grhok*a2+(grhoc+grhob)*a+grhog+grhornomass"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START<br>
+        if (CP%EFTflag==0) then ! Original CAMB code.<br>
+           if (w_lam == -1._dl) then<br>
+           grhoa2=grhoa2+grhov*a2**2<br>
+           else<br>
+           grhoa2=grhoa2+grhov*a**(1-3*w_lam)<br>
+           end if<br>
+        else if (CP%EFTflag/=0) then<br>
+           grhoa2=grhoa2+grhov*EFTw(a,2)*a2<br>
+        end if<br>
+</span><br>
+<span style="font-size: 15px; color: red">
+!... original:<br>
+!    if (w_lam == -1._dl) then<br>
+!        grhoa2=grhoa2+grhov*a2**2<br>
+!    else<br>
+!        grhoa2=grhoa2+grhov*a**(1-3*w_lam)<br>
+!    end if<br>
+</span>
+<span style="font-size: 15px; color: black">
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  ::::: module GaugeInterface :::::<br>
+  Add: After "use Errors"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START<br>
+        use EFTdef<br>
+        use EFTfunctions<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Add: After "real(dl) denlkt(4,max_l_evolve),Kft(max_l_evolve)"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START<br>
+     logical EFTCAMBactive<br>
+     real(dl) EFTturnOnTime<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  ::::: recursive subroutine GaugeInterface_EvolveScal(EV,tau,y,tauend,tol1,ind,c,w) :::::<br>
+  Add: After "tau_switch_nu_massive= noSwitch"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: add the dark energy switch.<br>
+    if (CP%EFTflag==0) EV%EFTturnOnTime = noSwitch<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Replace: After "tau_switch_no_phot_multpoles =max(15/EV%k_buf,taurend)*AccuracyBoost"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: add the dark energy switch.<br>
+    next_switch = min(tau_switch_ktau, tau_switch_nu_massless,EV%TightSwitchoffTime, tau_switch_nu_massive, &<br>
+    tau_switch_no_nu_multpoles, tau_switch_no_phot_multpoles, tau_switch_nu_nonrel,noSwitch, EV%EFTturnOnTime)<br>
+</span><br>
+<span style="font-size: 15px; color: red">
+!... Original:<br>
+!     next_switch = min(tau_switch_ktau, tau_switch_nu_massless,EV%TightSwitchoffTime, tau_switch_nu_massive, &<br>
+!                       tau_switch_no_nu_multpoles, tau_switch_no_phot_multpoles, tau_switch_nu_nonrel,noSwitch)<br>
+</span><span style="font-size: 15px; color: black">
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Add: After "else if (next_switch==tau_switch_no_phot_multpoles) then"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: effect of the DE switch. <br>
+        else if (next_switch==EV%EFTturnOnTime) then<br>
+            ind=1<br>
+            EVout%EFTCAMBactive = .true.<br>
+            EVout%EFTturnOnTime = noSwitch<br>
+            call SetupScalarArrayIndices(EVout)<br>
+            call CopyScalarVariableArray(y,yout, EV, EVout)<br>
+            y=yout<br>
+            EV=EVout<br>
+            call EFTpiInitialConditions(y,EV,tau)<br>
+! EFTCAMB MOD STOP<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  ::::: subroutine SetupScalarArrayIndices(EV, max_num_eqns) :::::<br>
+  Replace: After "maxeq = maxeq +  (EV%lmaxg+1)+(EV%lmaxnr+1)+EV%lmaxgpol-1"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START <br>
+          if ((w_lam /= -1 .and. w_Perturb).or.CP%EFTflag/=0) then<br>
+            EV%w_ix = neq+1<br>
+            neq=neq+2<br>
+            maxeq=maxeq+2<br>
+          else<br>
+            EV%w_ix=0<br>
+          end if<br>
+<br></span><span style="font-size: 15px; color: red">
+!... Original:<br>
+!    !Dark energy<br>
+!    if (w_lam /= -1 .and. w_Perturb) then<br>
+!        EV%w_ix = neq+1<br>
+!        neq=neq+2<br>
+!        maxeq=maxeq+2<br>
+!    else<br>
+!        EV%w_ix=0<br>
+!    end if<br>
+</span><span style="font-size: 15px; color: black">
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  ::::: subroutine CopyScalarVariableArray(y,yout, EV, EVout) :::::<br>
+  Replace: After "yout(1:basic_num_eqns) = y(1:basic_num_eqns)"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START <br>
+          if ((w_lam /= -1.and.w_Perturb).or.&<br>
+          &(CP%EFTflag/=0.and.EVout%EFTCAMBactive).or.&<br>
+          &(CP%EFTflag/=0.and.EV%EFTCAMBactive)) then<br>
+<br>
+               yout(EVout%w_ix)=y(EV%w_ix)<br>
+               yout(EVout%w_ix+1)=y(EV%w_ix+1)<br>
+          end if<br>
+<br></span><span style="font-size: 15px; color: red">
+!... Original:<br>
+!    if (w_lam /= -1 .and. w_Perturb) then<br>
+!        yout(EVout%w_ix)=y(EV%w_ix)<br>
+!        yout(EVout%w_ix+1)=y(EV%w_ix+1)<br>
+!    end if<br>
+</span><span style="font-size: 15px; color: black">
+! EFTCAMB MOD END
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  ::::: subroutine GetNumEqns(EV) :::::<br>
+  Add: Before "if (HighAccuracyDefault .and. CP%AccuratePolarization) then"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: <br>
+        EV%EFTCAMBactive = .false.<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  ::::: subroutine output(EV,y, j,tau,sources) :::::<br>
+  Add: After "real(dl) ISW"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: definitions of EFTCAMB quantities<br>
+        ! background quantities. Designer approach.<br>
+        real(dl) EFT_H0,Hdot, Hdotdot, adotdota<br>
+        ! storage for EFT functions.<br>
+        real(dl) EFTOmegaV, EFTOmegaP, EFTOmegaPP, EFTOmegaPPP<br>
+        real(dl) EFTAlpha1V, EFTAlpha1P, EFTAlpha2V, EFTAlpha2P, EFTAlpha3V, EFTAlpha3P              <br>
+        real(dl) EFTAlpha4V, EFTAlpha4P, EFTAlpha4PP, EFTAlpha5V, EFTAlpha5P, EFTAlpha6V, EFTAlpha6P <br>
+        ! Background quantities.<br>
+        real(dl) EFTc, EFTLambda, EFTcdot, EFTLambdadot<br>
+        real(dl) EFTgrhoq, EFTgpresq, EFTgrhodotq, EFTgpresdotq<br>
+        ! perturbations quantities.<br>
+        real(dl) EFTpiA, EFTpiB, EFTpiC, EFTpiD, EFTpiE                 ! pi field equations        <br>
+        real(dl) EFTeomF, EFTeomN, EFTeomX, EFTeomY, EFTeomG, EFTeomU   ! equations of motion       <br>
+        real(dl) EFTeomL, EFTeomM, EFTeomV, EFTeomNdot, EFTeomVdot, EFTeomXdot                      <br>
+        real(dl) pidotdot<br>
+        ! EFT quantities relevant for sources:<br>
+        real(dl) EFTISW, EFTLensing, EFTsigmadot, polterdot<br>
+        ! mu and gamma<br>
+        real(dl)  EFT_Psi, EFT_Phi, EFT_function_mu, EFT_function_gamma, EFT_xi<br>
+        ! Debug quantities<br>
+        real(dl) temp1, temp2, temp3,temp4, temp5, temp6, temp7<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Replace: Before "grho=grhob_t+grhoc_t+grhor_t+grhog_t+grhov_t"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: Computation of DE background density.<br>
+    if (CP%EFTflag==0) then<br>
+        grhov_t=grhov*a**(-1-3*w_lam)<br>
+    else if (CP%EFTflag/=0) then<br>
+        grhov_t=grhov*EFTw(a,2)<br>
+        EFT_H0 = (CP%h0/c_EFT)*1000._dl<br>
+    end if<br>
+<br></span><span style="font-size: 15px; color: red">
+!... Original:<br>
+!    grhov_t=grhov*a**(-1-3*w_lam)<br>
+</span><span style="font-size: 15px; color: black">
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Replace: After "grho=grhob_t+grhoc_t+grhor_t+grhog_t+grhov_t"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: computation of gpres.<br>
+    if (CP%EFTflag==0) then        ! Normal CAMB code<br>
+       gpres=(grhog_t+grhor_t)/3+grhov_t*w_lam<br>
+    else if (CP%EFTflag/=0) then<br>
+       gpres=(grhog_t+grhor_t)/3._dl +EFTw(a,0)*grhov_t<br>
+    end if<br>
+<br></span><span style="font-size: 15px; color: red">
+!... Original:<br>
+!    gpres=(grhog_t+grhor_t)/3+grhov_t*w_lam<br>
+</span><span style="font-size: 15px; color: black">
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Replace: After "call MassiveNuVarsOut(EV,y,yprime,a,grho,gpres,dgrho,dgq,dgpi, dgpi_diff,pidot_sum)"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: initialization of DE perturbations.<br>
+       if (CP%EFTflag==0) then<br>
+          if (w_lam /= -1 .and. w_Perturb) then<br>
+          clxq=y(EV%w_ix)<br>
+          vq=y(EV%w_ix+1)<br>
+          dgrho=dgrho + clxq*grhov_t<br>
+          dgq = dgq + vq*grhov_t*(1+w_lam)<br>
+          end if<br>
+       else if (CP%EFTflag/=0.and.EV%EFTCAMBactive) then<br>
+          clxq=y(EV%w_ix)<br>
+          vq=y(EV%w_ix+1)<br>
+          pidotdot = yprime(EV%w_ix+1)<br>
+       end if<br>
+<br></span><span style="font-size: 15px; color: red">
+!... Original:<br>
+!    if (w_lam /= -1 .and. w_Perturb) then<br>
+!        clxq=y(EV%w_ix)<br>
+!        vq=y(EV%w_ix+1)<br>
+!        dgrho=dgrho + clxq*grhov_t<br>
+!        dgq = dgq + vq*grhov_t*(1+w_lam)<br>
+!    end if<br>
+</span><span style="font-size: 15px; color: black">
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Replace:  After "adotoa=sqrt((grho+grhok)/3)" Before "if (EV%no_nu_multpoles) then"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: Computation of background quantities:<br>
+    ! 1) FRW background quantities.<br>
+    if (CP%EFTflag/=0.and.a>=EFTturnonpi) then<br>
+       adotdota=(adotoa*adotoa-gpres)/2._dl<br>
+       Hdot =adotdota-adotoa**2._dl<br>
+       Hdotdot = 2._dl*adotoa*Hdot &<br>
+          & + 0.5_dl*adotoa*(grhob_t + grhoc_t + 8._dl*(grhog_t+grhor_t)/3._dl)&<br>
+          & + 0.5_dl*adotoa*grhov_t*((1._dl+EFTw(a,0))*(1._dl+3._dl*EFTw(a,0))-a*EFTw(a,1))<br>
+    end if<br>
+    ! 2) Compute and write once for all the values of the EFT functions.<br>
+    if (CP%EFTflag/=0 .and. a>=EFTturnonpi*0.1_dl) then                 <br>
+    EFTOmegaV   = EFTOmega(a,0)<br>
+    EFTOmegaP   = EFTOmega(a,1)<br>
+    EFTOmegaPP  = EFTOmega(a,2)<br>
+    EFTOmegaPPP = EFTOmega(a,3)<br>
+    EFTAlpha1V  = EFTAlpha1(a,0)<br>
+    EFTAlpha1P  = EFTAlpha1(a,1)<br>
+    EFTAlpha2V  = EFTAlpha2(a,0)<br>
+    EFTAlpha2P  = EFTAlpha2(a,1)<br>
+    EFTAlpha3V  = EFTAlpha3(a,0)<br>
+    EFTAlpha3P  = EFTAlpha3(a,1)<br>
+    EFTAlpha4V  = EFTAlpha4(a,0)<br>
+    EFTAlpha4P  = EFTAlpha4(a,1)<br>
+    EFTAlpha4PP = EFTAlpha4(a,2)<br>
+    EFTAlpha5V  = EFTAlpha5(a,0)<br>
+    EFTAlpha5P  = EFTAlpha5(a,1)<br>
+    EFTAlpha6V  = EFTAlpha6(a,0)<br>
+    EFTAlpha6P  = EFTAlpha6(a,1)<br>
+    end if<br>
+    ! 3) Computation of EFT background quantities.<br>
+    if (CP%EFTflag/=0.and.a>=EFTturnonpi) then<br>
+      if (CP%EFTflag==1) then<br>
+        !8*pi*G*c*a^2<br>
+        EFTc = (adotoa*adotoa - Hdot)*(EFTOmegaV + a*EFTOmegaP*0.5_dl) &<br>
+                & - 0.5_dl*a2*adotoa*adotoa*EFTOmegaPP&<br>
+                & + 0.5_dl*grhov_t*(1._dl+EFTw(a,0))<br>
+        !8*pi*G*Lambda*a^2<br>
+        EFTLambda = +EFTw(a,0)*grhov_t &<br>
+                &-EFTOmegaV*(2._dl*Hdot+adotoa**2._dl) &<br>
+                &-a*EFTOmegaP*(2._dl*adotoa**2._dl + Hdot) &<br>
+                &-a2*adotoa**2._dl*EFTOmegaPP<br>
+        !EFT C DOT: 8*pi*G*cdot*a^2<br>
+        EFTcdot = -EFTOmegaV*(Hdotdot-4._dl*adotoa*Hdot+2._dl*adotoa*adotoa*adotoa) &<br>
+                & + 0.5_dl*a*EFTOmegaP*(-Hdotdot+adotoa*Hdot+adotoa*adotoa*adotoa)&<br>
+                & +0.5_dl*a2*adotoa*EFTOmegaPP*(adotoa*adotoa-3._dl*Hdot)&<br>
+                & -0.5_dl*a*a2*adotoa*adotoa*adotoa*EFTOmegaPPP&<br>
+                & +0.5_dl*adotoa*grhov_t*(-3._dl*(1._dl+EFTw(a,0))**2 + a*EFTw(a,1))<br>
+        !EFT LAMBDA DOT: 8*pi*G*Ldot*a^2<br>
+        EFTLambdadot = -2._dl*EFTOmegaV*(Hdotdot-adotoa*Hdot-adotoa*adotoa*adotoa)&<br>
+                & - a*EFTOmegaP*(4._dl*adotoa*Hdot+Hdotdot)&<br>
+                & -a2*EFTOmegaPP*adotoa*(3._dl*Hdot+2._dl*adotoa*adotoa)&<br>
+                & -a*a2*EFTOmegaPPP*adotoa*adotoa*adotoa&<br>
+                & +grhov_t*adotoa*(a*EFTw(a,1)-3._dl*EFTw(a,0)*(1._dl+EFTw(a,0)))<br>
+      else if (CP%EFTflag==2) then<br>
+        EFTc = EFTcTemp(a,0)<br>
+        EFTcdot = EFTcTemp(a,1)<br>
+        EFTLambda = EFTLambdaTemp(a,0)<br>
+        EFTLambdadot = EFTLambdaTemp(a,1)<br>
+      end if<br>
+      EFTgrhoq = 2._dl*EFTc -EFTLambda -3._dl*a*adotoa*adotoa*EFTOmegaP<br>
+      EFTgpresq = EFTLambda + a2*adotoa*adotoa*EFTOmegaPP&<br>
+                & +a*EFTOmegaP*(Hdot + 2._dl*adotoa*adotoa)<br>
+      EFTgrhodotq = -3._dl*adotoa*(EFTgrhoq+EFTgpresq) + 3._dl*a*adotoa**3._dl*EFTOmegaP<br>
+      EFTgpresdotq = EFTLambdadot +a2*a*adotoa**3*EFTOmegaPPP + 3._dl*a2*adotoa*Hdot*EFTOmegaPP&<br>
+                & +a*EFTOmegaP*Hdotdot +3._dl*a*adotoa*Hdot*EFTOmegaP +2._dl*a2*adotoa**3*EFTOmegaPP&<br>
+                & -2._dl*a*adotoa**3*EFTOmegaP<br>
+    end if<br>
+    ! Debug code. Print every background EFT quantity.<br>
+    if (a>= EFTturnonpi*0.1_dl.and.DebugEFT) then<br>
+        write (1,'(25e15.5)') a, tau, EFTOmegaV, EFTOmegaP, EFTOmegaPP, EFTOmegaPPP,&<br>
+                            & EFTAlpha1V, EFTAlpha1P, EFTAlpha2V, EFTAlpha2P, EFTAlpha3V, EFTAlpha3P,&       <br>
+                            & EFTAlpha4V, EFTAlpha4P, EFTAlpha4PP, EFTAlpha5V, EFTAlpha5P, EFTAlpha6V, EFTAlpha6P<br>
+        write (2,'(12e15.6)') a, tau, EFTc, EFTLambda, EFTcdot, EFTLambdadot, EFTgrhoq, EFTgpresq, EFTgrhodotq, EFTgpresdotq<br>
+        write (3,'(8e15.5)') a, tau, adotoa, Hdot, Hdotdot, grhov_t<br>
+    end if<br>
+! EFTCAMB MOD END<br>
+<br>
+! EFTCAMB MOD START: computation of Einstein equations factors.<br>
+    if (CP%EFTflag/=0.and.a>=EFTturnonpi) then<br>
+        EFTeomF     = 1.5_dl/(k*(1._dl+EFTOmegaV))*((EFTgrhoQ+EFTgpresQ)*clxq&                      ! Background op<br>
+                    & +adotoa*adotoa*a*EFTOmegaP*clxq+a*adotoa*EFTOmegaP*vq)&<br>
+                    & +1.5_dl*a*EFT_H0*EFTAlpha2V**3*(vq+adotoa*clxq)/(k*(1._dl+EFTOmegaV))&        ! Alpha2<br>
+                    & -1.5_dl*EFTAlpha3V**2/(1._dl+EFTOmegaV)*(k-3._dl*(Hdot-adotoa**2)/(k))*clxq&  ! ALpha3<br>
+                    & +1.5_dl*EFTAlpha4V**2/(1._dl+EFTOmegaV)*k*clxq&                               ! Alpha4<br>
+                    & -1.5_dl*EFTAlpha4V**2/(1._dl+EFTOmegaV)*(Hdot-adotoa**2)/k*clxq<br>
+        EFTeomN     = -a*adotoa*EFTOmegaP/(1._dl+EFTOmegaV)*k*clxq&                                 ! Background op<br>
+                    & +2._dl*adotoa/(1._dl+EFTOmegaV)*(EFTAlpha4V**2+a*EFTAlpha4V*EFTAlpha4P)*k*clxq& !Alpha4<br>
+                    & +EFTAlpha4V**2/(1._dl+EFTOmegaV)*k*vq&<br>
+                    & +2._dl*EFTAlpha5V**2*k*(vq+adotoa*clxq)/(1._dl+EFTOmegaV)                     ! Alpha5<br>
+        EFTeomNdot  = -a*Hdot*EFTOmegaP/(1._dl+EFTOmegaV)*k*clxq&                                   ! Backgrpund op<br>
+                    & -a*adotoa*EFTOmegaP/(1._dl+EFTOmegaV)*k*vq&<br>
+                    & -a*adotoa**2/(1._dl+EFTOmegaV)*(EFTOmegaP+a*EFTOmegaPP&<br>
+                    & -a*EFTOmegaP**2/(1._dl+EFTOmegaV))*k*clxq&<br>
+                    & +EFTAlpha4V**2*k*Pidotdot/(1._dl+EFTOmegaV)+ a*adotoa*k*vq/(1._dl+EFTOmegaV)*&! Alpha4<br>
+                    &(2._dl*EFTAlpha4V*EFTAlpha4P-EFTAlpha4V**2*EFTOmegaP/(1._dl+EFTOmegaV))&<br>
+                    & +2._dl*k/(1._dl+EFTOmegaV)*(EFTAlpha4V**2+a*EFTAlpha4V*EFTAlpha4P)*(Hdot*clxq+adotoa*vq)&<br>
+                    & +2._dl*a*adotoa**2*k*clxq/(1._dl+EFTOmegaV)*(a*EFTAlpha4V*EFTAlpha4PP+a*EFTAlpha4P**2&<br>
+                    & +3._dl*EFTAlpha4V*EFTAlpha4P-EFTOmegaP/(1._dl+EFTOmegaV)*(EFTAlpha4V**2+a*EFTAlpha4V*EFTAlpha4P))&<br>
+                    & +2._dl*EFTAlpha5V**2*k/(1._dl+EFTOmegaV)*(Pidotdot + adotoa*vq + Hdot*clxq)&  ! Alpha5<br>
+                    & +2._dl*a*k*adotoa/(1._dl+EFTOmegaV)*(vq+adotoa*clxq)*(2._dl*EFTAlpha5V*EFTAlpha5P&<br>
+                    & -EFTAlpha5V**2*EFTOmegaP/(1._dl+EFTOmegaV))<br>
+        EFTeomX     = 1._dl&                                                                        ! Backgrond op<br>
+                    & -EFTAlpha4V**2/(1._dl+EFTOmegaV)                                              ! Alpha4<br>
+        EFTeomXdot  = -a*adotoa/(1._dl+EFTOmegaV)*(2._dl*EFTAlpha4V*EFTAlpha4P&                     ! Alpha4<br>
+                    & -EFTAlpha4V**2*EFTOmegaP/(1._dl+EFTOmegaV))<br>
+        EFTeomY     = +0.5_dl*a*EFTOmegaP/(1._dl+EFTOmegaV)&                                        ! Background op<br>
+                    & +1.5_dl/(1._dl+EFTOmegaV)*(EFTAlpha3V**2+a*EFTAlpha3V*EFTAlpha3P)&            ! Alpha3<br>
+                    & +0.5_dl*(EFTAlpha4V**2+a*EFTAlpha4V*EFTAlpha4P)/(1._dl+EFTOmegaV)             ! Alpha4<br>
+        EFTeomG     = +1._dl + 0.5_dl*a*EFTOmegaP/(1._dl+EFTOmegaV)&                                ! Background op<br>
+                    & +0.5_dl*a*EFT_H0*EFTAlpha2V**3/adotoa/(1._dl+EFTOmegaV)&                      ! Alpha2<br>
+                    & +1.5_dl*EFTAlpha3V**2/(1._dl+EFTOmegaV)&                                      ! Alpha3<br>
+                    & +EFTAlpha4V**2/(1._dl+EFTOmegaV)                                              ! Alpha4<br>
+        EFTeomU     = 1._dl&                                                                        ! Background op<br>
+                    & +1.5_dl*EFTAlpha3V**2/(1._dl+EFTOmegaV)&                                      ! Alpha3<br>
+                    & +0.5_dl*EFTAlpha4V**2/(1._dl+EFTOmegaV)                                       ! Alpha4<br>
+        EFTeomL     = -1.5_dl*a*EFTOmegaP/(1._dl+EFTOmegaV)*(3._dl*adotoa*adotoa-Hdot)*clxq&        ! Background op<br>
+                    & -1.5_dl*a*EFTOmegaP/(1._dl+EFTOmegaV)*adotoa*vq&<br>
+                    & -0.5_dl*a*EFTOmegaP/(1._dl+EFTOmegaV)*k2*clxq&<br>
+                    & +0.5_dl*clxq/(adotoa*(1._dl+EFTOmegaV))*EFTgrhodotQ&<br>
+                    & +(vq+adotoa*clxq)/(adotoa*(1+EFTOmegaV))*EFTc&<br>
+                    & +2._dl*a2*EFT_H0**2*EFTAlpha1V**4/adotoa/(1._dl+EFTOmegaV)*(vq+adotoa*clxq)&  ! Alpha1<br>
+                    & +1.5_dl*a*EFT_H0*EFTAlpha2V**3/(1._dl+EFTOmegaV)*&                            ! Alpha2<br>
+                    &((Hdot/adotoa-2._dl*adotoa-k2/(3._dl*adotoa))*clxq-vq)&<br>
+                    & -1.5_dl*EFTAlpha3V**2/(1._dl+EFTOmegaV)*(k2-3._dl*(Hdot-adotoa**2))*clxq&     ! Alpha3<br>
+                    & +3._dl*EFTAlpha4V**2/(1._dl+EFTOmegaV)*(Hdot-adotoa**2-k2/3._dl)*clxq&        ! Alpha4<br>
+                    & +4._dl*EFTAlpha6V**2*k2/adotoa*(vq+adotoa*clxq)/(1._dl+EFTOmegaV)             ! Alpha6<br>
+        EFTeomM     = EFTgpresdotQ*clxq + (EFTgrhoQ+ EFTgpresQ)*(vq+adotoa*clxq)&                   ! Background op<br>
+                    & +a2*adotoa**2*EFTOmegaPP*vq +a2*adotoa**3*EFTOmegaPP*clxq&<br>
+                    & +a*adotoa*EFTOmegaP*(pidotdot + (Hdot/adotoa+4._dl*adotoa)*vq&<br>
+                    & + (2._dl*Hdot+6._dl*adotoa**2 +2._dl/3._dl*k2)*clxq)&<br>
+                    & +a*EFT_H0*EFTAlpha2V**2*(EFTAlpha2V*pidotdot&                                 ! Alpha2<br>
+                    & +(4._dl*EFTAlpha2V+3._dl*a*EFTAlpha2P)*adotoa*vq +(3._dl*adotoa**2*EFTAlpha2V&<br>
+                    & +Hdot*EFTAlpha2V +3._dl*a*adotoa**2*EFTAlpha2P)*clxq)&<br>
+                    & +EFTAlpha3V**2*(3._dl*adotoa**2-3._dl*Hdot+k2)*vq&                             ! Alpha3<br>
+                    & +EFTAlpha3V**2*(6._dl*adotoa**3-3._dl*Hdotdot)*clxq&<br>
+                    & +2._dl*adotoa*k2*clxq*(EFTAlpha3V**2+a*EFTAlpha3V*EFTAlpha3P)&<br>
+                    & -6._dl*a*adotoa*(Hdot-adotoa**2)*EFTAlpha3V*EFTAlpha3P*clxq&<br>
+                    & -EFTAlpha4V**2*(Hdot-adotoa**2-k2/3._dl)*vq&                                   ! Alpha4<br>
+                    & -2._dl*adotoa*(EFTAlpha4V**2+a*EFTAlpha4V*EFTAlpha4P)*(Hdot-adotoa**2-k2/3._dl)*clxq&<br>
+                    & -EFTAlpha4V**2*(Hdotdot-2*adotoa*Hdot)*clxq&<br>
+                    & -4._dl*EFTAlpha5V**2*k2*(vq+adotoa*clxq)/3._dl                                 ! Alpha5<br>
+        EFTeomV     = +0.5_dl*a*EFTOmegaP/(1._dl+EFTOmegaV)&                                         ! Background op<br>
+                    & -(EFTAlpha4V**2+a*EFTAlpha4V*EFTAlpha4P)/(1._dl+EFTOmegaV)                     ! Alpha4<br>
+        EFTeomVdot  = +0.5_dl*a*adotoa/(1._dl+EFTOmegaV)*(EFTOmegaP+a*EFTOmegaPP&                    ! Background op<br>
+                    & -a*EFTOmegaP**2/(1._dl+EFTOmegaV))&<br>
+                    & -a*adotoa/(1._dl+EFTOmegaV)*(a*EFTAlpha4V*EFTAlpha4PP+a*EFTAlpha4P**2&         ! Alpha4<br>
+                    & +3._dl*EFTAlpha4V*EFTAlpha4P-EFTOmegaP/(1._dl+EFTOmegaV)*(EFTAlpha4V**2+a*EFTAlpha4V*EFTAlpha4P))<br>
+    end if<br>
+    ! Debug code. Prints every EFT quantity defined so far.<br>
+        if (a>= EFTturnonpi .and. DebugEFTO) then<br>
+        write (6,'(15E15.5)') a, tau, EFTeomF, EFTeomN, EFTeomX, EFTeomY, EFTeomG, EFTeomU,&<br>
+                            & EFTeomL, EFTeomM, EFTeomNdot, EFTeomVdot, EFTeomXdot<br>
+        end if<br>
+! EFTCAMB MOD END<br>
+<br>
+! EFTCAMB MOD START: compute z,dz before loading radiation and photon<br>
+    if (CP%EFTflag==0.or.a<EFTturnonpi) then<br>
+        z=(0.5_dl*dgrho/k + etak)/adotoa<br>
+        dz= -adotoa*z - 0.5_dl*dgrho/k<br>
+    else if (CP%EFTflag/=0.and.a>=EFTturnonpi) then<br>
+    ! RSA approximation.<br>
+        z= 1._dl/EFTeomG*(etak/adotoa + 0.5_dl*dgrho/(k*adotoa*(1._dl+EFTOmegaV)) + EFTeomL/(k*EFT_H0))<br>
+        dz= 1._dl/EFTeomU*(-2._dl*adotoa*z*(1._dl+EFTeomY-0.5_dl*EFTeomG) &<br>
+          & - 0.5_dl*dgrho/k/(1._dl+EFTOmegaV) -adotoa*EFTeomL/(k*EFT_H0) -1.5_dl/k/(1._dl+EFTOmegaV)*EFTeomM/EFT_H0)<br>
+    end if<br>
+<br>
+    !equations of motion 1.<br>
+        if (EV%no_nu_multpoles) then<br>
+             clxr=-4*dz/k<br>
+             qr=-4._dl/3*z<br>
+             pir=0<br>
+             pirdot=0<br>
+        else<br>
+            clxr=y(EV%r_ix)<br>
+            qr  =y(EV%r_ix+1)<br>
+            pir =y(EV%r_ix+2)<br>
+            pirdot=yprime(EV%r_ix+2)<br>
+        end if<br>
+<br>
+        if (EV%no_phot_multpoles) then<br>
+             clxg=-4*dz/k -4/k*opac(j)*(vb+z)<br>
+             qg=-4._dl/3*z<br>
+             pig=0<br>
+             pigdot=0<br>
+             octg=0<br>
+             octgprime=0<br>
+             qgdot = -4*dz/3<br>
+        else<br>
+            if (EV%TightCoupling) then<br>
+             pig = EV%pig<br>
+             !pigdot=EV%pigdot<br>
+             if (second_order_tightcoupling) then<br>
+               octg = (3._dl/7._dl)*pig*(EV%k_buf/opac(j))<br>
+               ypol(2) = EV%pig/4 + EV%pigdot*(1._dl/opac(j))*(-5._dl/8._dl)<br>
+               ypol(3) = (3._dl/7._dl)*(EV%k_buf/opac(j))*ypol(2)<br>
+             else<br>
+               ypol(2) = EV%pig/4<br>
+               octg=0<br>
+             end if<br>
+             octgprime=0<br>
+            else<br>
+             pig =y(EV%g_ix+2)<br>
+             pigdot=yprime(EV%g_ix+2)<br>
+             octg=y(EV%g_ix+3)<br>
+             octgprime=yprime(EV%g_ix+3)<br>
+            end if<br>
+            clxg=y(EV%g_ix)<br>
+            qg  =y(EV%g_ix+1)<br>
+            qgdot =yprime(EV%g_ix+1)<br>
+       end if<br>
+<br></span><span style="font-size: 15px; color: red">
+!... Original:<br>
+!    if (EV%no_nu_multpoles) then<br>
+!        z=(0.5_dl*dgrho/k + etak)/adotoa<br>
+!        dz= -adotoa*z - 0.5_dl*dgrho/k<br>
+!        clxr=-4*dz/k<br>
+!        qr=-4._dl/3*z<br>
+!        pir=0<br>
+!        pirdot=0<br>
+!    else<br>
+!        clxr=y(EV%r_ix)<br>
+!        qr  =y(EV%r_ix+1)<br>
+!        pir =y(EV%r_ix+2)<br>
+!        pirdot=yprime(EV%r_ix+2)<br>
+!    end if<br>
+<br>
+!    if (EV%no_phot_multpoles) then<br>
+!        z=(0.5_dl*dgrho/k + etak)/adotoa<br>
+!        dz= -adotoa*z - 0.5_dl*dgrho/k<br>
+!        clxg=-4*dz/k -4/k*opac(j)*(vb+z)<br>
+!        qg=-4._dl/3*z<br>
+!        pig=0<br>
+!        pigdot=0<br>
+!        octg=0<br>
+!        octgprime=0<br>
+!        qgdot = -4*dz/3<br>
+!    else<br>
+!        if (EV%TightCoupling) then<br>
+!            pig = EV%pig<br>
+!            !pigdot=EV%pigdot<br>
+!            if (second_order_tightcoupling) then<br>
+!                octg = (3._dl/7._dl)*pig*(EV%k_buf/opac(j))<br>
+!                ypol(2) = EV%pig/4 + EV%pigdot*(1._dl/opac(j))*(-5._dl/8._dl)<br>
+!                ypol(3) = (3._dl/7._dl)*(EV%k_buf/opac(j))*ypol(2)<br>
+!            else<br>
+!                ypol(2) = EV%pig/4<br>
+!                octg=0<br>
+!            end if<br>
+!            octgprime=0<br>
+!        else<br>
+!            pig =y(EV%g_ix+2)<br>
+!            pigdot=yprime(EV%g_ix+2)<br>
+!            octg=y(EV%g_ix+3)<br>
+!            octgprime=yprime(EV%g_ix+3)<br>
+!        end if<br>
+!        clxg=y(EV%g_ix)<br>
+!        qg  =y(EV%g_ix+1)<br>
+!        qgdot =yprime(EV%g_ix+1)<br>
+!    end if<br>
+</span><span style="font-size: 15px; color: black">
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Replace: After "dgpi  = dgpi  + grhor_t*pir + grhog_t*pig"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: equation of motion 3.<br>
+        !  Get sigma (shear) and z from the constraints<br>
+        !  have to get z from eta for numerical stability<br>
+    if (CP%EFTflag==0 .or. a<EFTturnonpi) then<br>
+        z=(0.5_dl*dgrho/k + etak)/adotoa<br>
+        sigma=(z+1.5_dl*dgq/k2)/EV%Kf(1)<br>
+    else if (CP%EFTflag/=0 .and. a>=EFTturnonpi) then<br>
+        z= 1._dl/EFTeomG*(etak/adotoa + 0.5_dl*dgrho/(k*adotoa*(1._dl+EFTOmegaV)) + EFTeomL/(k*EFT_H0))<br>
+        dz=1._dl/EFTeomU*(-2*adotoa*(1._dl+EFTeomY)*z +etak -0.5_dl/k/(1._dl+EFTOmegaV)*(grhog_t*clxg+grhor_t*clxr)&<br>
+          & -1.5_dl/k/(1._dl+EFTOmegaV)*EFTeomM/EFT_H0)<br>
+        sigma= 1._dl/EFTeomX*(z*EFTeomU +1.5_dl*dgq/(k2*(1._dl+EFTOmegaV)) +EFTeomF/EFT_H0)<br>
+    end if<br>
+<br></span><span style="font-size: 15px; color: red">
+!... Original:<br>
+!    !  Get sigma (shear) and z from the constraints<br>
+!    !  have to get z from eta for numerical stability<br>
+!    z=(0.5_dl*dgrho/k + etak)/adotoa<br>
+!    sigma=(z+1.5_dl*dgq/k2)/EV%Kf(1)<br>
+</span><span style="font-size: 15px; color: black">
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Replace: After "diff_rhopi = pidot_sum - (4*dgpi+ dgpi_diff )*adotoa" Before "! Doppler term"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: computation of quantities used to construct the sources.<br>
+    if (CP%EFTflag/=0 .and. a>=EFTturnonpi) then<br>
+        EFTsigmadot= 1._dl/EFTeomX*(-2._dl*adotoa*(1._dl+EFTeomV)*sigma +etak&<br>
+                   & -1._dl/k*dgpi/(1._dl+EFTOmegaV) +EFTeomN/EFT_H0)<br>
+        EFTISW     = 1._dl/EFTeomX*(-2._dl*(1._dl+EFTeomV)*(Hdot*sigma+ adotoa*EFTsigmadot)&<br>
+                   & -2._dl*adotoa*sigma*EFTeomVdot + 0.5_dl*dgq*(1._dl+EFTeomX)/(1._dl+EFTOmegaV)&<br>
+                   & +a*adotoa*EFTOmegaP/k*dgpi/(1._dl+EFTOmegaV)**2&<br>
+                   & -1._dl/(1._dl+EFTOmegaV)*(2._dl*adotoa*dgpi/k+diff_rhopi/k)&<br>
+                   & +(1._dl+EFTeomX)*k2/3._dl/EFT_H0*EFTeomF-EFTeomXdot*EFTsigmadot+EFTeomNdot/EFT_H0)<br>
+        EFTLensing = 1._dl/EFTeomX*(-2._dl*adotoa*(1._dl+EFTeomV)*sigma +(1._dl+EFTeomX)*etak&<br>
+                   & -1._dl/k*dgpi/(1._dl+EFTOmegaV) +EFTeomN/EFT_H0)<br>
+     end if<br>
+! EFTCAMB MOD END<br>
+<br>
+! EFTCAMB MOD START: TT source<br>
+    if (CP%EFTflag==0.or.a<EFTturnonpi) then ! Normal CAMB code. <br>
+        !Maple's fortran output - see scal_eqs.map<br>
+        !2phi' term (\phi' + \psi' in Newtonian gauge)<br>
+        ISW = (4.D0/3.D0*k*EV%Kf(1)*sigma+(-2.D0/3.D0*sigma-2.D0/3.D0*etak/adotoa)*k &<br>
+              -diff_rhopi/k**2-1.D0/adotoa*dgrho/3.D0+(3.D0*gpres+5.D0*grho)*sigma/k/3.D0 &<br>
+              -2.D0/k*adotoa/EV%Kf(1)*etak)*expmmu(j)<br>
+        !e.g. to get only late-time ISW<br>
+        !  if (1/a-1 < 30) ISW=0 <br>
+        !The rest, note y(9)->octg, yprime(9)->octgprime (octopoles) <br>
+        sources(1)= ISW +  ((-9.D0/160.D0*pig-27.D0/80.D0*ypol(2))/k**2*opac(j)+(11.D0/10.D0*sigma- &<br>
+        3.D0/8.D0*EV%Kf(2)*ypol(3)+vb-9.D0/80.D0*EV%Kf(2)*octg+3.D0/40.D0*qg)/k-(- &<br>
+        180.D0*ypolprime(2)-30.D0*pigdot)/k**2/160.D0)*dvis(j)+(-(9.D0*pigdot+ &<br>
+        54.D0*ypolprime(2))/k**2*opac(j)/160.D0+pig/16.D0+clxg/4.D0+3.D0/8.D0*ypol(2)+(- &<br>
+        21.D0/5.D0*adotoa*sigma-3.D0/8.D0*EV%Kf(2)*ypolprime(3)+vbdot+3.D0/40.D0*qgdot- &<br>
+        9.D0/80.D0*EV%Kf(2)*octgprime)/k+(-9.D0/160.D0*dopac(j)*pig-21.D0/10.D0*dgpi-27.D0/ &<br>
+        80.D0*dopac(j)*ypol(2))/k**2)*vis(j)+(3.D0/16.D0*ddvis(j)*pig+9.D0/ &<br>
+        8.D0*ddvis(j)*ypol(2))/k**2+21.D0/10.D0/k/EV%Kf(1)*vis(j)*etak<br>
+    else if (CP%EFTflag/=0 .and. a>=EFTturnonpi) then<br>
+        polterdot = 9._dl/15._dl*ypolprime(2) + 0.1_dl*pigdot<br>
+        ISW = expmmu(j)*(EFTISW)/k<br>
+       sources(1) = ISW&<br>
+          & +vis(j)* (clxg/4.D0 + polter/1.6d0 + vbdot/k -9.D0*(polterdot)/k2*opac(j)/16.D0 -9.D0/16.D0*dopac(j)*polter/k2&<br>
+          & + 21.D0/10.D0*EFTsigmadot/k + 3.D0/40.D0*qgdot/k &<br>
+          & +(-3.D0/8.D0*EV%Kf(2)*ypolprime(3) - 9.D0/80.D0*EV%Kf(2)*octgprime)/k)&<br>
+          & +((-9.D0/160.D0*pig-27.D0/80.D0*ypol(2))/k**2*opac(j)+(11.D0/10.D0*sigma- &<br>
+          & 3.D0/8.D0*EV%Kf(2)*ypol(3)+vb-9.D0/80.D0*EV%Kf(2)*octg+3.D0/40.D0*qg)/k-(- &<br>
+          & 180.D0*ypolprime(2)-30.D0*pigdot)/k**2/160.D0)*dvis(j)&<br>
+          & +(3.D0/16.D0*ddvis(j)*pig+9.D0/8.D0*ddvis(j)*ypol(2))/k**2<br>
+    end if<br>
+    ! Debug code. Print quantities used to compute the sources.<br>
+    if (a>= EFTturnonpi .and. DebugEFTO) then<br>
+         write (7,'(10e15.5)') a, tau, z, sigma, EFTsigmadot, EFTISW, EFTLensing<br>
+    end if<br>
+<br></span><span style="font-size: 15px; color: red">
+!... Original:<br>
+!    !Maple's fortran output - see scal_eqs.map<br>
+!    !2phi' term (\phi' + \psi' in Newtonian gauge)<br>
+!    ISW = (4.D0/3.D0*k*EV%Kf(1)*sigma+(-2.D0/3.D0*sigma-2.D0/3.D0*etak/adotoa)*k &<br>
+!    -diff_rhopi/k**2-1.D0/adotoa*dgrho/3.D0+(3.D0*gpres+5.D0*grho)*sigma/k/3.D0 &<br>
+!    -2.D0/k*adotoa/EV%Kf(1)*etak)*expmmu(j)<br>
+<br>
+!    !e.g. to get only late-time ISW<br>
+!    !  if (1/a-1 < 30) ISW=0 <br>
+<br>
+!    !The rest, note y(9)->octg, yprime(9)->octgprime (octopoles)<br>
+!    sources(1)= ISW +  ((-9.D0/160.D0*pig-27.D0/80.D0*ypol(2))/k**2*opac(j)+ &<br>
+!    (11.D0/10.D0*sigma- 3.D0/8.D0*EV%Kf(2)*ypol(3)+vb-9.D0/80.D0*EV%Kf(2)*octg+3.D0/40.D0*qg)/k- &<br>
+!    (-180.D0*ypolprime(2)-30.D0*pigdot)/k**2/160.D0)*dvis(j) + &<br>
+!    (-(9.D0*pigdot+ 54.D0*ypolprime(2))/k**2*opac(j)/160.D0+pig/16.D0+clxg/4.D0+3.D0/8.D0*ypol(2) + &<br>
+!    (-21.D0/5.D0*adotoa*sigma-3.D0/8.D0*EV%Kf(2)*ypolprime(3) + &<br>
+!    vbdot+3.D0/40.D0*qgdot- 9.D0/80.D0*EV%Kf(2)*octgprime)/k + &<br>
+!    (-9.D0/160.D0*dopac(j)*pig-21.D0/10.D0*dgpi-27.D0/80.D0*dopac(j)*ypol(2))/k**2)*vis(j) + &<br>
+!    (3.D0/16.D0*ddvis(j)*pig+9.D0/8.D0*ddvis(j)*ypol(2))/k**2+21.D0/10.D0/k/EV%Kf(1)*vis(j)*etak<br>
+</span><span style="font-size: 15px; color: black">
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Replace: After "sources(2)=0"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: Lensing source<br>
+    if (CTransScal%NumSources > 2) then<br>
+        !Get lensing sources<br>
+        !Can modify this here if you want to get power spectra for other tracer<br>
+        if (tau>taurend .and. CP%tau0-tau > 0.1_dl) then<br>
+        if (CP%EFTflag==0 .or. a<EFTturnonpi) then <br>
+         !phi_lens = Phi - 1/2 kappa (a/k)^2 sum_i rho_i pi_i<br>
+         !Neglect pi contributions because not accurate at late time anyway<br>
+         phi = -(dgrho +3*dgq*adotoa/k)/(k2*EV%Kf(1)*2)<br>
+            ! - (grhor_t*pir + grhog_t*pig+ pinu*gpnu_t)/k2<br>
+         sources(3) = -2*phi*f_K(tau-tau_maxvis)/(f_K(CP%tau0-tau_maxvis)*f_K(CP%tau0-tau))<br>
+         !sources(3) = -2*phi*(tau-tau_maxvis)/((CP%tau0-tau_maxvis)*(CP%tau0-tau))<br>
+         !We include the lensing factor of two here<br>
+        else if (CP%EFTflag/=0 .and. a>=EFTturnonpi) then<br>
+         sources(3) = -(EFTLensing)/k*f_K(tau-tau_maxvis)/(f_K(CP%tau0-tau_maxvis)*f_K(CP%tau0-tau))<br>
+        end if<br>
+        ! Debug code:<br>
+        if (a>EFTturnonpi.and.DebugEFTO) then<br>
+          write (8,'(6e15.5)') a, tau, sources(1), sources(3)<br>
+        end if<br>
+        else<br>
+            sources(3) = 0<br>
+        end if<br>
+    end if<br>
+<br></span><span style="font-size: 15px; color: red">
+!... Original:<br>
+!    if (CTransScal%NumSources > 2) then<br>
+!        !Get lensing sources<br>
+!        !Can modify this here if you want to get power spectra for other tracer<br>
+!        if (tau>taurend .and. CP%tau0-tau > 0.1_dl) then<br>
+!            !phi_lens = Phi - 1/2 kappa (a/k)^2 sum_i rho_i pi_i<br>
+!            !Neglect pi contributions because not accurate at late time anyway<br>
+!            phi = -(dgrho +3*dgq*adotoa/k)/(k2*EV%Kf(1)*2)<br>
+!            ! - dgpi/k2/2<br>
+<br>
+!            sources(3) = -2*phi*f_K(tau-tau_maxvis)/(f_K(CP%tau0-tau_maxvis)*f_K(CP%tau0-tau))<br>
+!            !         sources(3) = -2*phi*(tau-tau_maxvis)/((CP%tau0-tau_maxvis)*(CP%tau0-tau))<br>
+!            !We include the lensing factor of two here<br>
+!        else<br>
+!            sources(3) = 0<br>
+!        end if<br>
+!    end if<br>
+</span><span style="font-size: 15px; color: black">
+! EFTCAMB MOD END<br>
+<br>
+! EFTCAMB MOD START: computation of mu and gamma. These are not used but it's nice to have the possibility to plot them...<br>
+      if (CP%EFTflag/=0.and.a>=EFTturnonpi) then<br>
+      EFT_Psi = EFTsigmadot/k + adotoa*sigma/k<br>
+      EFT_Phi = etak/k - adotoa*sigma/k<br>
+      EFT_function_mu = -2._dl*k*(EFTsigmadot+adotoa*sigma)/(dgrho)<br>
+      EFT_function_gamma = (etak - adotoa*sigma)/(EFTsigmadot + adotoa*sigma)<br>
+      EFT_xi = vq/(adotoa*clxq)<br>
+      ! This is used to print mu and gamma for different k values.<br>
+      ! If you don't want to print all the other quantities then<br>
+      ! turn off DenugEFTO and turn the other to true.<br>
+      if (DebugEFTO.or..false.) then<br>
+      write (9,'(10e15.5)') a, tau, 1._dl/a-1._dl, k, EFT_function_mu, EFT_function_gamma, EFT_xi<br>
+      end if<br>
+      end if<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  <b>::::: subroutine initial(EV,y, tau) ::::::</b><br>
+  Add: After "EV%TightSwitchoffTime = min(tight_tau,Thermo_OpacityToTime(EV%k_buf/ep))"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: compute the time at which turn on EFT. <br>
+    EV%EFTturnOnTime = DeltaTime(0._dl,EFTturnonpi)<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Replace: After "y(EV%g_ix+1)=InitVec(i_qg)"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: initial values.<br>
+    if (w_lam /= -1 .and. w_Perturb) then <br>
+        y(EV%w_ix) = InitVec(i_clxq)<br>
+        y(EV%w_ix+1) = InitVec(i_vq)<br>
+    end if<br>
+<br></span><span style="font-size: 15px; color: red">
+!... Original:<br>
+!    if (w_lam /= -1 .and. w_Perturb) then<br>
+!        y(EV%w_ix) = InitVec(i_clxq)<br>
+!        y(EV%w_ix+1) = InitVec(i_vq)<br>
+!    end if<br>
+</span><span style="font-size: 15px; color: black">
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  <b>::::: subroutine derivs(EV,n,tau,ay,ayprime) ::::::</b><br>
+  Add: After "real(dl) cothxor !1/tau in flat case"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: definition of variables<br>
+        ! background quantities. Designer approach.<br>
+        real(dl) EFT_H0,Hdot, Hdotdot<br>
+        ! storage for EFT functions.<br>
+        real(dl) EFTOmegaV, EFTOmegaP, EFTOmegaPP, EFTOmegaPPP<br>
+        real(dl) EFTAlpha1V, EFTAlpha1P, EFTAlpha2V, EFTAlpha2P, EFTAlpha3V, EFTAlpha3P              <br>
+        real(dl) EFTAlpha4V, EFTAlpha4P, EFTAlpha4PP, EFTAlpha5V, EFTAlpha5P, EFTAlpha6V, EFTAlpha6P <br>
+        ! Background quantities.<br>
+        real(dl) EFTc, EFTLambda, EFTcdot, EFTLambdadot<br>
+        real(dl) EFTgrhoq, EFTgpresq, EFTgrhodotq, EFTgpresdotq<br>
+        ! perturbations quantities.<br>
+        real(dl) EFTpiA, EFTpiB, EFTpiC, EFTpiD, EFTpiE                 ! pi field equations        <br>
+        real(dl) EFTeomF, EFTeomN, EFTeomX, EFTeomY, EFTeomG, EFTeomU   ! equations of motion      <br>
+        real(dl) EFTeomL, EFTeomM, EFTeomV, EFTeomNdot, EFTeomVdot, EFTeomXdot                     <br>
+        real(dl) pidotdot<br>
+        ! Debug quantities<br>
+        real(dl) temp1, temp2, temp3,temp4, temp5, temp6, temp7<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Replace: Before "!  Get sound speed and ionisation fraction."<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: Compute the DE background density.<br>
+    if (CP%EFTflag==0) then<br>
+        if (w_lam==-1._dl) then<br>
+        grhov_t=grhov*a2<br>
+        else<br>
+        grhov_t=grhov*a**(-1._dl-3._dl*w_lam)<br>
+        end if<br>
+    else if (CP%EFTflag/=0) then<br>
+        grhov_t=grhov*EFTw(a,2)<br>
+        EFT_H0 = (CP%h0/c_EFT)*1000._dl<br>
+    end if<br>
+<br></span><span style="font-size: 15px; color: red">
+!... Original:<br>
+!    if (w_lam==-1._dl) then<br>
+!        grhov_t=grhov*a2<br>
+!    else<br>
+!        grhov_t=grhov*a**(-1-3*w_lam)<br>
+!    end if<br>
+</span><span style="font-size: 15px; color: black">
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+
+<h2></h2>
+<div class="line"></div>
+<h2></h2>
+<!--end wrap-->
+<div id="spacing"></div>
+<!--hack for ie6 and ie7-->
+
+<center>
+    <div>-1-</div>
+<div><a href="./guide_EFTCAMB_May14_p2.html">-next page-</a>
+</div>
+</center>
+
+</BODY>
+</HTML>

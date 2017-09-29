@@ -1,0 +1,734 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+ <title>Guide to EFTCAMB_Oct14_p1</title>
+<meta charset="utf-8">
+<link type="text/css" rel="stylesheet" href="../styles/style.css" />
+</head>
+
+<body>
+        <div id="wrap">
+            <div id="top">
+
+
+<div id="div_justify"><b><span style="font-size: 15px;color: ƒfon">
+<center>
+<div class="navbar">
+<a id="nav-home" class="#active" href="./index.html">HOME&nbsp;&nbsp;&nbsp;
+</a>
+||
+<a id="nav-about" href="./index.html#about">&nbsp;&nbsp;&nbsp;ABOUT EFTCAMB&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-code" href="./download.html">&nbsp;&nbsp;&nbsp;CODE&nbsp;&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-team" href="./team.html">&nbsp;&nbsp;&nbsp;TEAM&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./works.html">&nbsp;&nbsp;&nbsp;WORKS&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./examples.html">&nbsp;&nbsp;&nbsp;EXAMPLES&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./index.html#contact">&nbsp;&nbsp;&nbsp;CONTACT&nbsp;&nbsp;&nbsp;</a>
+</div>
+</center>
+</span></b></div>
+<h2></h2>
+<div class="line"></div>
+
+<h1></h1>
+<center> </span><span style="font-size: 40px">Guide to  </span> <span style="color: #0b8bbb;font-size: 40px">EFTCAMB_Oct14</span>
+</center>
+<h1></h1>
+
+<div id="top">
+    <h3></h3>
+    <div id="top-pic"><img src="../images/Image_Gamma_V2.png"  alt="" /></div>
+</div>
+<h4></h4>
+
+<h2></h2>
+<div class="line"></div><br>
+
+<b><span style="font-size: 15px; color: red">There might exist some typos in this guide, please check it carefully with our original source codes.</span></b>
+<b><span style="font-size: 15px; color: red">If you encounter any problems during your modifications, please contact us.</span></b>
+
+<h2></h2>
+<div class="line"></div><br><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Add: <b>EFT_main.f90</b><br>
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Add: <b>EFTstabilitySpace.f90</b><br>
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>Makefile_main</b><br><br>
+<div>
+  <span style="font-size: 15px;" >Replace:</span>
+</div>
+<div><span style="font-size: 15px; color: black">EQUATIONS     ?= equations_EFT</span><br>
+<span style="font-size: 15px; color: red">
+#… Original:<br>
+#EQUATIONS     ?= equations
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;" >Add: After</span>
+  <span style="font-size: 15px; color: red" >#DRIVER       ?= tester.f90</span>
+</div>
+<div>
+    <span style="font-size: 15px; color: black" >
+    # EFTCAMB: optional program to test stability.<br>
+    #DRIVER       ?= EFTstabilitySpace_V3.f90</span><br>
+</div><br>
+
+<div>
+  <span style="font-size: 15px;" >Replace:</span>
+</div>
+<div>
+    <span style="font-size: 15px; color: black" >
+# EFTCAMB MOD START<br>
+CAMBOBJ       = constants.o utils.o $(EXTCAMBFILES) subroutines.o inifile.o $(POWERSPECTRUM).o $(RECOMBINATION).o \<br>
+$(REIONIZATION).o modules.o bessels.o EFT_main.o $(EQUATIONS).o $(NONLINEAR).o lensing.o $(BISPECTRUM).o cmbmain.o camb.o<br>
+# EFTCAMB MOD END</span><br>
+    <span style="font-size: 15px; color: red" >
+#… Original:<br>
+#CAMBOBJ       = constants.o utils.o $(EXTCAMBFILES) subroutines.o inifile.o $(POWERSPECTRUM).o $(RECOMBINATION).o \<br>
+#	$(REIONIZATION).o modules.o bessels.o $(EQUATIONS).o $(NONLINEAR).o lensing.o $(BISPECTRUM).o cmbmain.o camb.o</span><br>
+</div><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>params.ini</b><br><br>
+<div>
+   <span style="font-size: 15px;" >Add: At the beginning</span>
+</div>
+
+<div><span style="font-size: 15px; color: black" >
+####### Model selection flags for EFTCAMB #######<br>
+<br>
+#	 EFT flags: set up in which mode EFTCAMB is used.<br>
+# 	 We refer to the documentation (EFTCAMB:numerical notes) for a thorough<br>
+# 	 explanation of the effect of these flags.<br>
+#<br>
+# 1) Main EFT flag:<br>
+#      EFTflag = 0 : GR code. Every EFT modification is ignored.<br>
+#      EFTflag = 1 : Pure EFT code.<br>
+#      EFTflag = 2 : Designer matching EFT.<br>
+#      EFTflag = 3 : Matching EFT.<br>
+<br>
+EFTflag = 0<br>
+<br>
+# 2) Background Dark Energy equation of state flag:<br>
+#      EFTwDE = 0 : Cosmological constant<br>
+#      EFTwDE = 1 : DE with constant Eos determined by EFTw0<br>
+#      EFTwDE = 2 : CPL parametrization<br>
+#      EFTwDE = 3 : JBP parametrization<br>
+#      EFTwDE = 4 : turning point parametrization<br>
+#      EFTwDE = 5 : Taylor expansion<br>
+#      EFTwDE = 6 : User defined<br>
+<br>
+EFTwDE = 0<br>
+<br>
+# 3) Pure EFT model selection flag:<br>
+#	 The following structure applies to every operator and can be specified for every operator<br>
+#	 separately.<br>
+#<br>
+#      PureEFTmodel___ = 0 : Zero (operator ignored)<br>
+#      PureEFTmodel___ = 1 : Constant model<br>
+#      PureEFTmodel___ = 2 : Linear model<br>
+#      PureEFTmodel___ = 3 : Power law model<br>
+#      PureEFTmodel___ = 4 : Exponential model<br>
+#      PureEFTmodel___ = 5 : User defined<br>
+<br>
+PureEFTmodelOmega  = 1<br>
+PureEFTmodelAlpha1 = 0<br>
+PureEFTmodelAlpha2 = 0<br>
+PureEFTmodelAlpha3 = 0<br>
+PureEFTmodelAlpha4 = 0<br>
+PureEFTmodelAlpha5 = 0<br>
+PureEFTmodelAlpha6 = 0<br>
+<br>
+# 4) Designer matching EFT model selection flag:<br>
+#      DesignerEFTmodel = 1 : designer f(R)<br>
+#      DesignerEFTmodel = 2 : designer minimally coupled quintessence<br>
+<br>
+DesignerEFTmodel = 1<br>
+<br>
+# 5) Matching EFT model selection flag:<br>
+#      No model implemented so far.<br>
+<br>
+MatchingEFTmodel = 1<br>
+<br>
+####### Model parameters for EFTCAMB #######<br>
+<br>
+#	Notice that if the model is not selected via the model selection flags then<br>
+#	the values of the parameters are automatically ignored.<br>
+<br>
+#  1) Background Dark Energy equation of state parameters:<br>
+<br>
+EFTw0  = -0.7<br>
+EFTwa  = -0.3<br>
+EFTwn  = 2<br>
+EFTwat = 0.8<br>
+EFtw2  = 0.1<br>
+EFTw3  = 0.1<br>
+<br>
+#  2) Pure EFT parameters:<br>
+<br>
+EFTOmega0 = 0.1<br>
+EFTOmegaExp = 2.8<br>
+<br>
+EFTAlpha10 = 0<br>
+EFTAlpha1Exp = 0<br>
+<br>
+EFTAlpha20 = 0.1<br>
+EFTAlpha2Exp = 0<br>
+<br>
+EFTAlpha30 = 0.001<br>
+EFTAlpha3Exp = 0<br>
+<br>
+EFTAlpha40 = 0.001<br>
+EFTAlpha4Exp = 0<br>
+<br>
+EFTAlpha50 = 0.1<br>
+EFTAlpha5Exp = 0<br>
+<br>
+EFTAlpha60 = 0.1<br>
+EFTAlpha6Exp = 0<br>
+<br>
+#  3) Designer matching parameters:<br>
+#      	 Model 1: designer f(R) theories<br>
+<br>
+EFTB0 = 0.1<br>
+<br>
+####### Parameters for CAMB #######</span><br>
+</div>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>cmbmain.f90</b><br><br>
+<div>
+
+<div><span style="font-size: 15px;" >
+    ::::: Module CAMBmain :::::</span>
+</div><br>
+
+<div><span style="font-size: 15px;" >
+Add: After</span> <span style="font-size: 15px; color: red" >use Errors</span><br>
+<div><span style="font-size: 15px; color: black" >
+! EFTCAMB MOD START<br>
+use EFTinitialization<br>
+! EFTCAMB MOD END<br></span></div><br>
+
+<div><span style="font-size: 15px;" >Replace:</span></div>
+<div>
+<span style="font-size: 15px; color: black" >
+! EFTCAMB MOD START:<br>
+!    To debug the code it should be launched on just one thread by<br>
+!    changing the appropriate entry in the parameter file.<br>
+real(dl) :: fixq = 0._dl !Debug output of one q<br>
+! EFTCAMB MOD END.<br>
+</span></div>
+<div><span style="font-size: 15px; color: red" >
+#… Original:<br>
+real(dl) :: fixq = 0._dl !Debug output of one q<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >
+    ::::: subroutine cmbmain :::::</span></div><br>
+
+<div><span style="font-size: 15px;" >Add: After</span> <span style="font-size: 15px; color: red" >integer q_ix</span></div>
+<div><span style="font-size: 15px; color: black" >
+! EFTCAMB MOD START<br>
+logical EFTsuccess<br>
+! EFTCAMB MOD END<br></span></div><br>
+
+<div><span style="font-size: 15px;" >Add: After</span> <span style="font-size: 15px; color: red" >WantLateTime =  CP%DoLensing .or. num_redshiftwindows > 0</span></div>
+<div><span style="font-size: 15px; color: black" >
+! EFTCAMB MOD START<br>
+if (EFTCAMBuseinCOSMOMC==1.and.CP%EFTflag/=0) then<br>
+call EFTCAMB_initialization(EFTsuccess)<br>
+if (.not.EFTsuccess) stop<br>
+end if<br>
+! EFTCAMB MOD END<br></span></div><br>
+
+<div><span style="font-size: 15px;" >
+    ::::: subroutine CalcScalarSources(EV,taustart) :::::</span></div><br>
+
+<div><span style="font-size: 15px;" >
+Replace:</span></div>
+<div><span style="font-size: 15px; color:black" >
+! EFTCAMB MOD START: It's always nice to plot the evolution of perturbations in DE/MG models!<br>
+! In order to print the user needs to choose the scale by means of fixq and then turno on the<br>
+! flag that prints quantities from the output routine.<br>
+! It is suggested to run the code on just one core.<br>
+<br>
+if (fixq/=0._dl) then<br>
+tol1=tol/exp(AccuracyBoost-1)<br>
+<br>
+write(*,*) 'EFTCAMB: start printing.'<br>
+call CreateTxtFile('Results/Debug_Evolution/Files/1_FRW.dat',1)<br>
+call CreateTxtFile('Results/Debug_Evolution/Files/2_EFTfunctions.dat',2)<br>
+call CreateTxtFile('Results/Debug_Evolution/Files/3_EFTBackground.dat',3)<br>
+call CreateTxtFile('Results/Debug_Evolution/Files/4_PiFieldSolution.dat',4)<br>
+call CreateTxtFile('Results/Debug_Evolution/Files/5_MetricSolution.dat',5)<br>
+call CreateTxtFile('Results/Debug_Evolution/Files/6_DensitySolution.dat',6)<br>
+call CreateTxtFile('Results/Debug_Evolution/Files/7_EinsteinEqFactors.dat',7)<br>
+call CreateTxtFile('Results/Debug_Evolution/Files/8_PiEqFactors.dat',8)<br>
+call CreateTxtFile('Results/Debug_Evolution/Files/9_Sources.dat',9)<br>
+call CreateTxtFile('Results/Debug_Evolution/Files/10_MuGamma.dat',10)<br>
+<br>
+call CreateTxtFile('Results/Debug_File/Debug.dat',11)<br>
+<br>
+do j=1,10000<br>
+tauend = taustart +REAL(j-1)*(CP%tau0-taustart)/REAL(10000-1)<br>
+call GaugeInterface_EvolveScal(EV,tau,y,tauend,tol1,ind,c,w)<br>
+yprime = 0<br>
+call derivs(EV,EV%ScalEqsToPropagate,tau,y,yprime)<br>
+call output(EV,y,j,tau,sources)<br>
+end do<br>
+<br>
+close(1)<br>
+close(2)<br>
+close(3)<br>
+close(4)<br>
+close(5)<br>
+close(6)<br>
+close(7)<br>
+close(8)<br>
+close(9)<br>
+close(10)<br>
+close(11)<br>
+write(*,*) 'Stop printing'<br>
+stop<br>
+end if<br></span></div><br>
+<div><span style="font-size: 15px; color: red" >
+! Original code:<br>
+!!Example code for plotting out variable evolution<br>
+!!if (fixq/=0._dl) then<br>
+!!    tol1=tol/exp(AccuracyBoost-1)<br>
+!!    call CreateTxtFile('evolve_q005.txt',1)<br>
+!!    do j=1,1000<br>
+!!        tauend = taustart+(j-1)*(CP%tau0-taustart)/1000<br>
+!!        call GaugeInterface_EvolveScal(EV,tau,y,tauend,tol1,ind,c,w)<br>
+!!        yprime = 0<br>
+!!        call derivs(EV,EV%ScalEqsToPropagate,tau,y,yprime)<br>
+!!        adotoa = 1/(y(1)*dtauda(y(1)))<br>
+!!        ddelta= (yprime(3)*grhoc+yprime(4)*grhob)/(grhob+grhoc)<br>
+!!        delta=(grhoc*y(3)+grhob*y(4))/(grhob+grhoc)<br>
+!!        growth= ddelta/delta/adotoa<br>
+!!        write (1,'(7E15.5)') tau, delta, growth, y(3), y(4), y(EV%g_ix), y(1)<br>
+!!    end do<br>
+!!    close(1)<br>
+!!    stop<br>
+!!end if<br>
+! EFTCAMB MOD END<br></span></div><br>
+
+
+<div><span style="font-size: 15px;" >
+    ::::: subroutine GetTransfer(EV,tau) :::::</span></div><br>
+<div><span style="font-size: 15px;" >Replace:</span></div>
+<div><span style="font-size: 15px; color: black" >
+! EFTCAMB MOD START: this seems to create some problems. It should be safe to turn it off.<br>
+if (CP%EFTflag/=0) then<br>
+if (CP%Transfer%high_precision) atol=atol<br>
+else<br>
+if (CP%Transfer%high_precision) atol=atol/10000<br>
+end if<br>
+</span></div><br>
+<div><span style="font-size: 15px;color: red" >
+! Original code:<br>
+! if (CP%Transfer%high_precision) atol=atol/10000<br>
+! EFTCAMB MOD END.<br>
+</span></div><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>modules.f90</b><br><br>
+<div>
+
+<div><span style="font-size: 15px;" >
+    ::::: module ModelParams :::::</span></div><br>
+<div><span style="font-size: 15px;" >Add: After</span> <span style="font-size: 15px;color: red" >integer   :: Nu_mass_numbers(max_nu) !physical number per eigenstate</span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START<br>
+! 1) Definition of flags:<br>
+integer :: EFTflag<br>
+integer :: EFTwDE<br>
+integer :: PureEFTmodelOmega<br>
+integer :: PureEFTmodelAlpha1, PureEFTmodelAlpha2, PureEFTmodelAlpha3<br>
+integer :: PureEFTmodelAlpha4, PureEFTmodelAlpha5, PureEFTmodelAlpha6<br>
+integer :: DesignerEFTmodel<br>
+integer :: MatchingEFTmodel<br>
+! 2) Definition of model parameters:<br>
+real(dl) :: EFTw0, EFTwa, EFTwn, EFTwat, EFtw2, EFTw3<br>
+real(dl) :: EFTOmega0, EFTOmegaExp<br>
+real(dl) :: EFTAlpha10, EFTAlpha1Exp, EFTAlpha20, EFTAlpha2Exp<br>
+real(dl) :: EFTAlpha30, EFTAlpha3Exp, EFTAlpha40, EFTAlpha4Exp<br>
+real(dl) :: EFTAlpha50, EFTAlpha5Exp, EFTAlpha60, EFTAlpha6Exp<br>
+real(dl) :: EFTB0<br>
+! EFTCAMB MOD END<br></span></div><br>
+
+<div><span style="font-size: 15px;" >
+    ::::: module MassiveNu :::::</span></div><br>
+
+<div><span style="font-size: 15px;" >Replace:</span></div>
+<div><span style="font-size: 15px; color: black" >
+! EFTCAMB MOD START: compatibility with massive neutrinos<br>
+real(dl), dimension(:), allocatable ::  r1,p1,dr1,dp1,ddr1, ddp1, dddp1<br>
+</span></div>
+<div><span style="font-size: 15px; color: red" >
+! Original code:<br>
+! real(dl), dimension(:), allocatable ::  r1,p1,dr1,dp1,ddr1<br>
+! EFTCAMB MOD END.<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >Replace:</span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START: compatibility with massive neutrinos<br>
+public const,Nu_Init,Nu_background, Nu_rho, Nu_drho,  nqmax0, nqmax, &<br>
+nu_int_kernel, nu_q, Nu_pidot, Nu_pidotdot<br></div>
+<div><span style="font-size: 15px;color: red" >
+! Original code:<br>
+! public const,Nu_Init,Nu_background, Nu_rho, Nu_drho,  nqmax0, nqmax, &<br>
+! nu_int_kernel, nu_q<br>
+! EFTCAMB MOD END.<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >
+::::: subroutine Nu_init :::::</span></div><br>
+
+<div><span style="font-size: 15px;" >Replace:</span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START: compatibility with massive neutrinos<br>
+allocate(r1(nrhopn),p1(nrhopn),dr1(nrhopn),dp1(nrhopn),ddr1(nrhopn),ddp1(nrhopn),dddp1(nrhopn))<br>
+</span></div>
+<div><span style="font-size: 15px;color: red" >
+! Original code:<br>
+! allocate(r1(nrhopn),p1(nrhopn),dr1(nrhopn),dp1(nrhopn),ddr1(nrhopn))<br>
+! EFTCAMB MOD END.<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >Add: After</span> <span style="font-size: 15px;color: red" >call splder(dr1,ddr1,nrhopn,spline_data)</span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START: compatibility with massive neutrinos<br>
+call splder(dp1,ddp1,nrhopn,spline_data)<br>
+call splder(ddp1,dddp1,nrhopn,spline_data)<br>
+! EFTCAMB MOD END.<br></span></div><br>
+
+<div><span style="font-size: 15px;" >Add: After</span> <span style="font-size: 15px;color: red" >end function Nu_drho</div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START: compatibility with massive neutrinos<br>
+function Nu_pidot(am,adotoa,presnu) result (presnudot)<br>
+use precision<br>
+use ModelParams<br>
+<br>
+real(dl) adotoa,presnu,presnudot<br>
+real(dl) d<br>
+real(dl), intent(IN) :: am<br>
+integer i<br>
+<br>
+if (am< am_minp) then<br>
+    presnudot = -2*const2*am**2*adotoa/3._dl<br>
+    else if (am>am_maxp) then<br>
+    presnudot = -((15._dl*(4._dl*am**2*zeta5 -189._dl*Zeta7))/(8._dl*am**3*const))*adotoa<br>
+    else<br>
+    d=log(am/am_min)/dlnam+1._dl<br>
+    i=int(d)<br>
+    d=d-i<br>
+    <br>
+    presnudot = dp1(i)+d*(ddp1(i)+d*(3._dl*(dp1(i+1)-dp1(i))-2._dl*ddp1(i) &<br>
+    -ddp1(i+1)+d*(ddp1(i)+ddp1(i+1)+2._dl*(dp1(i)-dp1(i+1)))))<br>
+    <br>
+    presnudot=presnu*adotoa*presnudot/dlnam<br>
+    end if<br>
+    <br>
+    end function Nu_pidot<br>
+    <br>
+    function Nu_pidotdot(am,adotoa,Hdot,presnu,presnudot) result (presnudotdot)<br>
+    use precision<br>
+    use ModelParams<br>
+    <br>
+    real(dl) adotoa,Hdot,presnu,presnudot,presnudotdot<br>
+    real(dl) d<br>
+    real(dl), intent(in) :: am<br>
+    integer i<br>
+    <br>
+    if (am< am_minp) then<br>
+    presnudotdot = presnudot*(adotoa +Hdot/adotoa) +am**2*adotoa**2*(-2._dl*const2/3._dl)<br>
+    else if (am>am_maxp) then<br>
+    presnudotdot = presnudot*(adotoa +Hdot/adotoa) +am**2*adotoa**2*(&<br>
+    &-((15._dl*zeta5)/(am**3*const)) + (15._dl*(4._dl*am**2*zeta5 -189._dl*Zeta7))/(2._dl*am**5*const))<br>
+    else<br>
+    <br>
+    d=log(am/am_min)/dlnam+1._dl<br>
+    i=int(d)<br>
+    d=d-i<br>
+    <br>
+    presnudotdot = ddp1(i)+d*(dddp1(i)+d*(3._dl*(ddp1(i+1)-ddp1(i))-2._dl*dddp1(i) &<br>
+    -dddp1(i+1)+d*(dddp1(i)+dddp1(i+1)+2._dl*(ddp1(i)-ddp1(i+1)))))<br>
+    <br>
+    presnudotdot = +adotoa**2*presnu*presnudotdot/dlnam +Hdot/adotoa*presnudot +presnudot**2/presnu<br>
+    end if<br>
+    <br>
+    end function Nu_pidotdot<br>
+    ! EFTCAMB MOD END.<br>
+</span></div><br>
+
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>inidriver.F90</b><br><br>
+<div>
+
+<div><span style="font-size: 15px;" >
+::::: program driver :::::</span></div><br>
+
+<div><span style="font-size: 15px;" >Add: After</span></div>
+<div><span style="font-size: 15px;color: red" >
+#ifdef NAGF95<br>
+use F90_UNIX<br>
+#endif<br></span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START<br>
+use EFTdef<br>
+! EFTCAMB MOD END<br></span></div><br>
+
+<div><span style="font-size: 15px;" >
+Add: After</span> <span style="font-size: 15px;color: red" >P%tcmb   = Ini_Read_Double('temp_cmb',COBE_CMBTemp)</span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START<br>
+<br>
+! 1) Initialization of EFTCAMB flags.<br>
+<br>
+P%EFTflag = Ini_Read_Int('EFTflag',0)<br>
+<br>
+P%EFTwDE = Ini_Read_Int('EFTwDE',0)<br>
+<br>
+P%PureEFTmodelOmega  = Ini_Read_Int('PureEFTmodelOmega',0)<br>
+P%PureEFTmodelAlpha1 = Ini_Read_Int('PureEFTmodelAlpha1',0)<br>
+P%PureEFTmodelAlpha2 = Ini_Read_Int('PureEFTmodelAlpha2',0)<br>
+P%PureEFTmodelAlpha3 = Ini_Read_Int('PureEFTmodelAlpha3',0)<br>
+P%PureEFTmodelAlpha4 = Ini_Read_Int('PureEFTmodelAlpha4',0)<br>
+P%PureEFTmodelAlpha5 = Ini_Read_Int('PureEFTmodelAlpha5',0)<br>
+P%PureEFTmodelAlpha6 = Ini_Read_Int('PureEFTmodelAlpha6',0)<br>
+<br>
+P%DesignerEFTmodel = Ini_Read_Int('DesignerEFTmodel',1)<br>
+P%MatchingEFTmodel = Ini_Read_Int('MatchingEFTmodel',1)<br>
+<br>
+! 2) Initialization of EFTCAMB model parameters.<br>
+<br>
+P%EFTw0  = Ini_Read_Double('EFTw0',-1._dl)<br>
+P%EFTwa  = Ini_Read_Double('EFTwa',0._dl)<br>
+P%EFTwn  = Ini_Read_Double('EFTwn',2._dl)<br>
+P%EFTwat = Ini_Read_Double('EFTwat',1._dl)<br>
+P%EFtw2  = Ini_Read_Double('EFtw2',0._dl)<br>
+P%EFTw3  = Ini_Read_Double('EFTw3',0._dl)<br>
+<br>
+P%EFTOmega0    = Ini_Read_Double('EFTOmega0')<br>
+P%EFTOmegaExp  = Ini_Read_Double('EFTOmegaExp')<br>
+P%EFTAlpha10   = Ini_Read_Double('EFTAlpha10')<br>
+P%EFTAlpha1Exp = Ini_Read_Double('EFTAlpha1Exp')<br>
+P%EFTAlpha20   = Ini_Read_Double('EFTAlpha20')<br>
+P%EFTAlpha2Exp = Ini_Read_Double('EFTAlpha2Exp')<br>
+P%EFTAlpha30   = Ini_Read_Double('EFTAlpha30')<br>
+P%EFTAlpha3Exp = Ini_Read_Double('EFTAlpha3Exp')<br>
+P%EFTAlpha40   = Ini_Read_Double('EFTAlpha40')<br>
+P%EFTAlpha4Exp = Ini_Read_Double('EFTAlpha4Exp')<br>
+P%EFTAlpha50   = Ini_Read_Double('EFTAlpha50')<br>
+P%EFTAlpha5Exp = Ini_Read_Double('EFTAlpha5Exp')<br>
+P%EFTAlpha60   = Ini_Read_Double('EFTAlpha60')<br>
+P%EFTAlpha6Exp = Ini_Read_Double('EFTAlpha6Exp')<br>
+<br>
+P%EFTB0 = Ini_Read_Double('EFTB0')<br>
+<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>----------------------------------------------------------------------------------------------------------------------------</div>
+Modify: <b>equations.f90 => equations_EFT.f90</b><br><br>
+<div>
+
+<div><span style="font-size: 15px;" >
+    ::::: function dtauda(a) :::::
+</span></div><br>
+
+<div><span style="font-size: 15px;" >Add: After</span><span style="font-size: 15px;color: red" > use LambdaGeneral</span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START<br>
+use EFTfunctions<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >Replace:</span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START<br>
+if (CP%EFTflag==0) then ! Original CAMB code.<br>
+if (w_lam == -1._dl) then<br>
+grhoa2=grhoa2+grhov*a2**2<br>
+else<br>
+grhoa2=grhoa2+grhov*a**(1-3*w_lam)<br>
+end if<br>
+else if (CP%EFTflag/=0) then<br>
+grhoa2=grhoa2+grhov*EFTw(a,3)*a2<br>
+end if<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >
+    ::::: module GaugeInterface :::::</span></div><br>
+
+<div><span style="font-size: 15px;" >Add: After</span><span style="font-size: 15px;color: red" > use Errors</span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START<br>
+use EFTfunctions<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >Add: After</span><span style="font-size: 15px;color: red" > real(dl) denlkt(4,max_l_evolve),Kft(max_l_evolve)</span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START<br>
+logical EFTCAMBactive<br>
+real(dl) EFTturnOnTime<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >
+    ::::: recursive subroutine GaugeInterface_EvolveScal(EV,tau,y,tauend,tol1,ind,c,w) :::::</span></div><br>
+
+<div><span style="font-size: 15px;" >Add: After </span><span style="font-size: 15px;color: red" >tau_switch_nu_massive= noSwitch</span></div><br>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START: add the dark energy switch.<br>
+if (CP%EFTflag==0) EV%EFTturnOnTime = noSwitch<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >Replace:</span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START: add the dark energy switch.<br>
+next_switch = min(tau_switch_ktau, tau_switch_nu_massless,EV%TightSwitchoffTime, tau_switch_nu_massive, &<br>
+tau_switch_no_nu_multpoles, tau_switch_no_phot_multpoles, tau_switch_nu_nonrel,noSwitch, EV%EFTturnOnTime)<br>
+</span><span style="font-size: 15px;color: red" >
+! Original code:<br>
+! next_switch = min(tau_switch_ktau, tau_switch_nu_massless,EV%TightSwitchoffTime, tau_switch_nu_massive, &<br>
+! tau_switch_no_nu_multpoles, tau_switch_no_phot_multpoles, tau_switch_nu_nonrel,noSwitch)<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >Add: Inside </span><span style="font-size: 15px;color: red" >else if (next_switch==tau_switch_no_phot_multpoles) then After EV=EVout</span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START: effect of the DE switch.<br>
+else if (next_switch==EV%EFTturnOnTime) then<br>
+ind=1<br>
+EVout%EFTCAMBactive = .true.<br>
+EVout%EFTturnOnTime = noSwitch<br>
+call SetupScalarArrayIndices(EVout)<br>
+call CopyScalarVariableArray(y,yout, EV, EVout)<br>
+y=yout<br>
+EV=EVout<br>
+call EFTpiInitialConditions(y,EV,tau)<br>
+! EFTCAMB MOD STOP<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >
+    ::::: subroutine SetupScalarArrayIndices(EV, max_num_eqns) :::::</span></div><br>
+
+<div><span style="font-size: 15px;" >Replace:</span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START<br>
+if ((w_lam /= -1 .and. w_Perturb).or.CP%EFTflag/=0) then<br>
+EV%w_ix = neq+1<br>
+neq=neq+2<br>
+maxeq=maxeq+2<br>
+else<br>
+EV%w_ix=0<br>
+end if<br>
+</span><span style="font-size: 15px;color: red" >
+! Original code:<br>
+! !Dark energy<br>
+! if (w_lam /= -1 .and. w_Perturb) then<br>
+!  EV%w_ix = neq+1<br>
+!  neq=neq+2<br>
+!  maxeq=maxeq+2<br>
+! else<br>
+!  EV%w_ix=0<br>
+! end if<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >
+    ::::: subroutine CopyScalarVariableArray(y,yout, EV, EVout) :::::</span></div><br>
+
+<div><span style="font-size: 15px;" >Replace:</span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START<br>
+if ((w_lam /= -1.and.w_Perturb).or.&<br>
+&(CP%EFTflag/=0.and.EVout%EFTCAMBactive).or.&<br>
+&(CP%EFTflag/=0.and.EV%EFTCAMBactive)) then<br>
+<br>
+yout(EVout%w_ix)=y(EV%w_ix)<br>
+yout(EVout%w_ix+1)=y(EV%w_ix+1)<br>
+end if<br>
+</span><span style="font-size: 15px;color: red" >
+! Original code:<br>
+! if (w_lam /= -1 .and. w_Perturb) then<br>
+!  yout(EVout%w_ix)=y(EV%w_ix)<br>
+!  yout(EVout%w_ix+1)=y(EV%w_ix+1)<br>
+! end if<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >
+    ::::: subroutine GetNumEqns(EV) :::::</span></div><br>
+
+<div><span style="font-size: 15px;" >Add: After</span><span style="font-size: 15px;color: red" > EV%MassiveNuApprox=.false.</div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START:<br>
+EV%EFTCAMBactive = .false.<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >
+    ::::: subroutine MassiveNuVars(EV,y,a,grho,gpres,dgrho,dgq, wnu_arr) :::::</span></div><br>
+
+<div><span style="font-size: 15px;" >Replace:</span></div>
+<div><span style="font-size: 15px;color: red" >
+! EFTCAMB MOD START: compatibility with massive neutrinos<br>
+subroutine MassiveNuVars(EV,y,a,grho,gpres,dgrho,dgq, wnu_arr, dgp)<br>
+! Original code:<br>
+! subroutine MassiveNuVars(EV,y,a,grho,gpres,dgrho,dgq, wnu_arr)<br>
+! EFTCAMB MOD END.<br>
+</span><div><span style="font-size: 15px;color: black" >
+implicit none<br>
+type(EvolutionVars) EV<br>
+real(dl) :: y(EV%nvar), a, grho,gpres,dgrho,dgq<br>
+real(dl), intent(out), optional :: wnu_arr(max_nu)<br>
+! EFTCAMB MOD START: compatibility with massive neutrinos<br>
+real(dl), intent(out), optional :: dgp<br>
+! EFTCAMB MOD END.<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >Add: After</span><span style="font-size: 15px;color: red" >  dgq  = dgq   + grhonu_t*qnu</span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START: compatibility with massive neutrinos<br>
+if (present(dgp)) then<br>
+dgp = dgp + gpnu_t*clxnu<br>
+end if<br>
+! EFTCAMB MOD END.<br>
+</span></div><br>
+
+
+
+<h2></h2>
+<div class="line"></div>
+<h2></h2>
+<!--end wrap-->
+<div id="spacing"></div>
+<!--hack for ie6 and ie7-->
+
+<center>
+    <div>-1-</div>
+    <div><a href="./guide_EFTCAMB_Oct14_p2.html">
+ - next page - </a></div>
+
+</center>
+
+
+
+</BODY>
+</HTML>

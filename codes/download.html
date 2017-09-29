@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <title>Code</title>
+
+        <meta charset="utf-8">
+            <link type="text/css" rel="stylesheet" href="../styles/style.css" />
+            <!--[if IE 6]>
+             <script src="js/ie6-transparency.js"></script>
+             <script>DD_belatedPNG.fix('#wrap .line, #header #header-photo');</script>
+             <link rel="stylesheet" href="styles/ie6.css" />
+             <![endif]-->
+            <!--[if IE 7]><link rel="stylesheet" href="styles/ie7.css" /><![endif]-->
+            <!--[if IE 8]><link rel="stylesheet" href="styles/ie8.css" /><![endif]-->
+            <!--[if IE 9]><link rel="stylesheet" href="styles/ie9.css" /><![endif]-->
+
+<meta http-equiv="X-UA-Compatible" content="IE=9" />
+
+<style type="text/css">
+img {
+    margin: 0 10px 0 0;
+
+    -moz-border-radius: 180px;
+    -webkit-border-radius: 180px;
+    border-radius: 180px;
+}
+</style>
+
+    </head>
+    <body>
+        <div id="wrap">
+
+  <div id="top">
+                <div></div>
+
+
+<div id="div_justify"><b><span style="font-size: 15px;color: ƒfon">
+<center>
+<div class="navbar">
+<a id="nav-home" class="#active" href="./index.html">HOME&nbsp;&nbsp;&nbsp;
+</a>
+||
+<a id="nav-about" href="./index.html#about">&nbsp;&nbsp;&nbsp;ABOUT EFTCAMB&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-code" href="./download.html">&nbsp;&nbsp;&nbsp;CODE&nbsp;&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-team" href="./team.html">&nbsp;&nbsp;&nbsp;TEAM&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./works.html">&nbsp;&nbsp;&nbsp;WORKS&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./examples.html">&nbsp;&nbsp;&nbsp;EXAMPLES&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./index.html#contact">&nbsp;&nbsp;&nbsp;CONTACT&nbsp;&nbsp;&nbsp;</a>
+</div>
+</center>
+</span></b></div>
+<h2></h2>
+<div class="line"></div>
+
+<h2></h2>
+
+<center>
+<h1>
+ <div id="div_justify"><b><span style="font-size: 40px; color:#0b8bbb">  EFTCAMB
+<div>Download and Installation</div>
+</h1>
+</center>
+</span></b></div>
+
+<center>
+<div id="top">
+    <div ><img src="../images/logo.jpg" alt="" style="height: 280px;"></div></div>
+</center>
+
+<h2></h2>
+<div class="line"></div>
+<h2></h2>
+<!--end wrap-->
+<div id="spacing"></div>
+<!--hack for ie6 and ie7-->
+<!div align="right">
+<h3></h3>
+
+
+        <div>&#8226 Download the source files: <a href="../files/EFTCAMB_Sept17.tar.gz">EFTCAMB_Sept17</a>, <a href="../files/EFTCosmoMC_Sept17.tar.gz">EFTCosmoMC_Sept17</a>;<div><br>
+        <div>&#8226 EFTCAMB_Sept17 is based on <a href="http://camb.info/" target="_blank">CAMB</a> (Jan17) and EFTCosmoMC_Sept17 on <a href="http://cosmologist.info/cosmomc/" target="_blank">CosmoMC</a> (Nov16) as available from their <a href="https://github.com/cmbant" target="_blank">GIT</a> repositories ;</div><br>
+        <div>&#8226 Follow the instructions on the respective README files to compile both codes.</div><br>
+
+        <span style='font-size: 14px; font-weight: bold; color: black'> </span> If you are interested in the latest features (as well as the latest bugs) or you want to participate to the development of EFTCAMB/EFTCosmoMC you can have a look at the <a href="https://github.com/EFTCAMB" target="_blank">developer's version</a>  hosted on github. We welcome all who want to participate!<br><br>
+
+If you want to modify your own CAMB code, please follow our <a href="./guide_EFTCAMB.html">guide to EFTCAMB</a>
+and <a href="./guide_EFTCosmoMC.html">guide to EFTCosmoMC</a>. Given the articulated structure of our source codes, we strongly encourage to download the official
+package.
+<h3></h3>
+
+Requirements: compiling EFTCAMB/EFTCosmoMC requires a modern fortran compiler capable of handeling advanced F2008 features.
+These include the free gfortran compiler ( version 6 higher ) or the optimized Intel compiler ifort ( version 16.0 or higher ). <br>
+To use other parts of the code, like the test suite or the automatic documentation generation other requirements have to be met.
+These include a fully fledged python installation and we warmly suggest to install a bundled package like <a href="https://www.continuum.io/downloads" target="_blank">anaconda</a>.
+<h3></h3>
+
+<h3> <span style="color:red">What is new?</span> </B></div></h3>
+
+<div>&#8226 Complete code restructuring to allow easy implementation of a large number of models. Scalability in model space should now be constant up to O(1000) models;<div>
+<div>&#8226 Model interface is now abstract so that no further major change to EFTCosmoMC should be needed;<div>
+<div>&#8226 Optimization and speed up of several different models. In particular RPH models are now as fast as native Pure EFT models;<div>
+<div>&#8226 EFTCAMB has now an automatically built code documentation available at <a href="https://eftcamb.github.io/EFTCAMB/" target="_blank">this link</a>;<div>
+<div>&#8226 Implemented automatic code testing and benchmarking;<div>
+<div>&#8226 Added code examples;<div>
+
+<br>
+
+<div id="installation" class="cv-section"></div>
+
+<div id="history" class="cv-section"></div>
+
+
+<h3>Version history</h3>
+
+ <div>&#8226 EFTCAMB/EFTCosmoMC/EFTCAMB_sources  v2.0: <a href="../files/EFTCAMB_Oct15.tar.gz">EFTCAMB_Oct15  </a>, <a href="../files/EFTCosmoMC_Oct15.tar.gz">EFTCosmoMC_Oct15  </a> (based on CAMB (Feb 15)/CosmoMC (Jul15)), <a href="./EFTCAMB_Sources_Oct14.tar">EFTCAMB_sources_Oct14</a>  (based on CAMB_sources_Nov13);  <div>
+
+<ul>
+<li> Added Pure EFT Horndeski model;
+<li>Added ReParametrized Horndeski approach (RPH);</li>
+<li> Change in the parametrization of the EFT functions;</li>
+<li> Added a full EFT mapping model: low-energy Horava Gravity;</li>
+<li> Implemented stability conditions which now account for the presence of matter components;</li>
+<li> Added mathematical stability requirements on the equation for the  &#960 -field;</li>
+<li>  EFTCAMB/EFTCosmoMC is compatible with the Planck 2015 likelihood.</li><br>
+
+
+
+
+ <div>&#8226 EFTCAMB/EFTCosmoMC/EFTCAMB_sources  v1.1: <a href="../files/EFTCAMB_Oct14.tar.gz">EFTCAMB_Oct14  </a>, <a href="../files/EFTCosmoMC_Oct14.tar.gz">EFTCosmoMC_Oct14  </a> (based on CAMB/CosmoMC_Dec13), <a href="./EFTCAMB_Sources_Oct14.tar">EFTCAMB_sources_Oct14</a>  (based on CAMB_sources_Nov13);  <div>
+
+   <ul>
+   <li>  Added support for massive neutrinos;   </li>
+   <li>Added effects on tensor perturbations; </li>
+   <li> Added designer minimally coupled quintessence models;       </li>
+   <li> Added several Dark Energy equation of state parametrizations; </li>
+   <li>  Linear tensor perturbations bug fixed involving ONLY second order operators; </li>
+   <li> EFTCAMB sources release based on EFTCAMB_Oct14 Version. </li>
+   </ul>
+   <br>
+
+ <div>&#8226 EFTCAMB/EFTCosmoMC  v1.0: <a href="../files/EFTCAMB_May14.tar.gz">EFTCAMB_May14  </a>, <a href="../files/EFTCosmoMC_May14.tar.gz">EFTCosmoMC_May14  </a> (based on CAMB/CosmoMC_Dec13);  <div><br>
+
+
+
+
+<h2></h2>
+<div class="line"></div>
+<h2></h2>
+<!--end wrap-->
+<div id="spacing"></div>
+<!--hack for ie6 and ie7-->
+<!div align="right">
+
+<center>
+    <div><a href="./download.html"> - Back to the top - </a>
+</div>
+
+</center>
+
+
+
+
+
+                    </div>
+                    <!--end wrap-->
+                    <div id="spacing"></div>
+                    <!--hack for ie6 and ie7-->
+                    </body>
+                    </html>

@@ -1,0 +1,258 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+ <title>Guide to EFTCAMB_Oct14_p1</title>
+<meta charset="utf-8">
+<link type="text/css" rel="stylesheet" href="../styles/style.css" />
+</head>
+
+<body>
+        <div id="wrap">
+            <div id="top">
+
+
+<div id="div_justify"><b><span style="font-size: 15px;color: ƒfon">
+<center>
+<div class="navbar">
+<a id="nav-home" class="#active" href="./index.html">HOME&nbsp;&nbsp;&nbsp;
+</a>
+||
+<a id="nav-about" href="./index.html#about">&nbsp;&nbsp;&nbsp;ABOUT EFTCAMB&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-code" href="./download.html">&nbsp;&nbsp;&nbsp;CODE&nbsp;&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-team" href="./team.html">&nbsp;&nbsp;&nbsp;TEAM&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./works.html">&nbsp;&nbsp;&nbsp;WORKS&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./examples.html">&nbsp;&nbsp;&nbsp;EXAMPLES&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./index.html#contact">&nbsp;&nbsp;&nbsp;CONTACT&nbsp;&nbsp;&nbsp;</a>
+</div>
+</center>
+</span></b></div>
+<h2></h2>
+<div class="line"></div>
+<h1></h1>
+<center> </span><span style="font-size: 40px">Guide to  </span> <span style="color: #0b8bbb;font-size: 40px">EFTCAMB_Oct14</span>
+</center>
+<h1></h1>
+
+<div id="top">
+    <h3></h3>
+    <div id="top-pic"><img src="../images/Image_Gamma_V2.png"  alt="" /></div>
+</div>
+<h4></h4>
+
+<h2></h2>
+<div class="line"></div><br>
+
+<b><span style="font-size: 15px; color: red">There might exist some typos in this guide, please check it carefully with our original source codes.</span></b>
+<b><span style="font-size: 15px; color: red">If you encounter any problems during your modifications, please contact us.</span></b>
+
+<h2></h2>
+<div class="line"></div><br><br>
+
+<div><span style="font-size: 15px;" >Comment off: After</span><span style="font-size: 15px;color: red" > !Approximate total density variables with just matter terms</span></div>
+<div><span style="font-size: 15px;color: red" >
+!z=(0.5_dl*dgrho/k + etak)/adotoa   ! EFTCAMB MOD<br>
+!dz= -adotoa*z - 0.5_dl*dgrho/k     ! EFTCAMB MOD<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >Comment off: After</span><span style="font-size: 15px;color: red" > if (.not. EV%no_nu_multpoles) then</span></div>
+<div><span style="font-size: 15px;color: red" >
+!z=(0.5_dl*dgrho/k + etak)/adotoa   ! EFTCAMB MOD<br>
+!dz= -adotoa*z - 0.5_dl*dgrho/k     ! EFTCAMB MOD<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >Replace:</span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START: equation of motion. Now we use the non-RSA expression for dz.<br>
+if (CP%EFTflag==0 .or. .not. EV%EFTCAMBactive) then<br>
+!Get sigma (shear) and z from the constraints<br>
+!have to get z from eta for numerical stability<br>
+z=(0.5_dl*dgrho/k + etak)/adotoa<br>
+if (CP%flat) then<br>
+sigma=(z+1.5_dl*dgq/k2)<br>
+ayprime(2)=0.5_dl*dgq<br>
+else<br>
+sigma=(z+1.5_dl*dgq/k2)/EV%Kf(1)<br>
+ayprime(2)=0.5_dl*dgq + CP%curv*z<br>
+end if<br>
+else if (CP%EFTflag/=0.and.CP%flat.and. EV%EFTCAMBactive) then<br>
+z= 1._dl/EFTeomG*(etak/adotoa + 0.5_dl*dgrho/(k*adotoa*(1._dl+EFTOmegaV)) + EFTeomL/(k*EFT_H0))<br>
+dz=1._dl/EFTeomU*(-2*adotoa*(1._dl+EFTeomY)*z +etak -0.5_dl/k/(1._dl+EFTOmegaV)*(grhog_t*clxg+grhor_t*clxr)&<br>
+& -1.5_dl/k/(1._dl+EFTOmegaV)*EFTeomM/EFT_H0)<br>
+sigma= 1._dl/EFTeomX*(z*EFTeomU +1.5_dl*dgq/(k2*(1._dl+EFTOmegaV)) +EFTeomF/EFT_H0)<br>
+ayprime(2)=0.5_dl*dgq/(1._dl+EFTOmegaV) + k2/3._dl*EFTeomF/EFT_H0<br>
+end if<br>
+</span><span style="font-size: 15px;color: red" >
+! Original code:<br>
+! z=(0.5_dl*dgrho/k + etak)/adotoa<br>
+! if (CP%flat) then<br>
+!  !eta*k equation<br>
+!  sigma=(z+1.5_dl*dgq/k2)<br>
+!  ayprime(2)=0.5_dl*dgq<br>
+! else<br>
+!  sigma=(z+1.5_dl*dgq/k2)/EV%Kf(1)<br>
+!  ayprime(2)=0.5_dl*dgq + CP%curv*z<br>
+! end if<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >Replace:</span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START: Pi field equation.<br>
+! 1) Computation of pi field equation prefactors.<br>
+if (CP%EFTflag/=0 .and. a>=EFTturnonpi*0.1_dl) then<br>
+EFTpiA = EFTc +2*a2*EFT_H0**2*EFTAlpha1V**4 +3._dl/2._dl*a2*(adotoa*EFTOmegaP+EFT_H0*EFTAlpha2V**3)**2&<br>
+&/(2._dl*(1+EFTOmegaV)+EFTAlpha3V**2+EFTAlpha4V**2) +4._dl*a2*k2*EFTAlpha6V**2<br>
+!<br>
+EFTpiB = EFTcdot +4._dl*adotoa*EFTc +8._dl*a2*adotoa*EFT_H0*(EFTAlpha1V**4+a*EFTAlpha1V**3*EFTAlpha1P)&<br>
+& +4._dl*a2*k2*adotoa*(3._dl*EFTAlpha6V**2+a*EFTAlpha6V*EFTAlpha6P) +a*k2*(EFTAlpha4V**2&<br>
+& +2._dl*EFTAlpha5V**2)/(2._dl*(1._dl+EFTOmegaV)-2._dl*EFTAlpha4V**2)*(adotoa*EFTOmegaP+EFT_H0*EFTAlpha2V**3)&<br>
+& -a*(adotoa*EFTOmegaP+EFT_H0*EFTAlpha2V**3)/(4._dl*(1._dl+EFTOmegaV)+6._dl*EFTAlpha3V**2 +2._dl*EFTAlpha4V**2)*&<br>
+&(-3._dl*(EFTgrhoQ + EFTgpresQ) -3._dl*a*adotoa**2*EFTOmegaP*(4._dl +Hdot/(adotoa**2)) -3._dl*a2*adotoa**2*EFTOmegaPP&<br>
+& -3*a*adotoa*EFT_H0*(4._dl*EFTAlpha2V**3 +3._dl*a*EFTAlpha2V**2*EFTAlpha2P) -(9._dl*EFTAlpha3V**2-3._dl*EFTAlpha4V**2)*&<br>
+&(Hdot-adotoa**2) +k2*(3._dl*EFTAlpha3V**2-EFTAlpha4V**2+4._dl*EFTAlpha5V**2))&<br>
+& +1._dl/(1._dl+EFTOmegaV+2._dl*EFTAlpha5V**2)*(a*adotoa*EFTOmegaP+2._dl*adotoa*(EFTAlpha5V**2+2._dl*EFTAlpha5V*EFTAlpha5P)&<br>
+& -(1._dl+EFTOmegaV)*(a*adotoa*EFTOmegaP+a*EFT_H0*EFTAlpha2V**3)/(2._dl*(1._dl+EFTOmegaV)+3._dl*EFTAlpha3V**2+EFTAlpha4V**2))*&<br>
+&(-EFTc +1.5_dl*a*adotoa**2*EFTOmegaP-2._dl*a2*EFT_H0*EFTAlpha1V**4-4._dl*EFTAlpha6V**2*k2+1.5_dl*a*adotoa*EFT_H0*EFTAlpha2V**3)<br>
+!<br>
+EFTpiC = +adotoa*EFTcdot +(6._dl*adotoa**2-2._dl*Hdot)*EFTc +1.5_dl*a*adotoa*EFTOmegaP*(Hdotdot-2._dl*adotoa**3) &<br>
+& +6._dl*a2*adotoa**2*EFT_H0**2*EFTAlpha1V**4 +2._dl*a2*Hdot*EFT_H0**2*EFTAlpha1V**4 &<br>
+& +8._dl*a2*a*adotoa**2*EFT_H0**2*EFTAlpha1V**3*EFTAlpha1P +1.5_dl*(Hdot-adotoa**2)**2*(EFTAlpha4V**2+3._dl*EFTAlpha3V**2)&<br>
+& +4.5_dl*adotoa*EFT_H0*a*(Hdot-adotoa**2)*(EFTAlpha2V**3+a*EFTAlpha2V**2*EFTAlpha2P)&<br>
+& +0.5_dl*a*EFT_H0*EFTAlpha2V**3*(3._dl*Hdotdot -12._dl*Hdot*adotoa +6._dl*adotoa**3) &<br>
+& -a*(adotoa*EFTOmegaP+EFT_H0*EFTAlpha2V**3)/(4._dl*(1._dl+EFTOmegaV)+6._dl*EFTAlpha3V**2 +2._dl*EFTAlpha4V**2)*&<br>
+&(-3._dl*EFTgpresdotQ -3._dl*adotoa*(EFTgrhoQ +EFTgpresQ)-3._dl*a*adotoa**3*(a*EFTOmegaPP +6._dl*EFTOmegaP) &<br>
+& -6._dl*a*adotoa*Hdot*EFTOmegaP +3._dl*(Hdotdot-2._dl*adotoa*Hdot)*(EFTAlpha4V**2+3._dl*EFTAlpha3V**2)&<br>
+& +6._dl*adotoa*(Hdot-adotoa**2)*(3._dl*EFTAlpha3V**2+3._dl*a*EFTAlpha3V*EFTAlpha3P +EFTAlpha4V**2 +a*EFTAlpha4V*EFTAlpha4P)&<br>
+& -3._dl*a*EFT_H0*(3._dl*adotoa**2*EFTAlpha2V**3 +Hdot*EFTAlpha2V**3 +3._dl*a*adotoa**2*EFTAlpha2V**2*EFTAlpha2P))&<br>
+& +1._dl/(1._dl+EFTOmegaV+2._dl*EFTAlpha5V**2)*(a*adotoa*EFTOmegaP+2._dl*adotoa*(EFTAlpha5V**2+2._dl*a*EFTAlpha5V*EFTAlpha5P)&<br>
+& -(1._dl+EFTOmegaV)*(a*adotoa*EFTOmegaP+a*EFT_H0*EFTAlpha2V**3)/(2._dl*(1._dl+EFTOmegaV)+3._dl*EFTAlpha3V**2+EFTAlpha4V**2))*&<br>
+&(-0.5*EFTgrhodotQ -adotoa*EFTc +1.5_dl*a*adotoa*EFTOmegaP*(3._dl*adotoa**2-Hdot) -2._dl*a2*adotoa*EFT_H0**2*EFTAlpha1V**4&<br>
+& -1.5_dl*a*EFT_H0*EFTAlpha2V**3*(Hdot-2._dl*adotoa**2) -3._dl*adotoa*(Hdot-adotoa**2)*(1.5_dl*EFTAlpha3V**2+EFTAlpha4V**2))<br>
+!<br>
+EFTpiD = EFTc -0.5_dl*a*adotoa*EFT_H0*(EFTAlpha2V**3+3._dl*a*EFTAlpha2V**2*EFTAlpha2P) +(adotoa**2-Hdot)*(3._dl*EFTAlpha3V**2+EFTAlpha4V**2)&<br>
+& +4._dl*a2*(Hdot*EFTAlpha6V**2 +2._dl*adotoa**2*EFTAlpha6V**2 +a*adotoa**2*EFTAlpha6V*EFTAlpha6P)&<br>
+& +2._dl*(Hdot*EFTAlpha5V**2 +2._dl*a*adotoa**2*EFTAlpha5V*EFTAlpha5P)&<br>
+& -a*(adotoa*EFTOmegaP+EFT_H0*EFTAlpha2V**3)/(4._dl*(1._dl+EFTOmegaV)+6._dl*EFTAlpha3V**2 +2._dl*EFTAlpha4V**2)*&<br>
+&(-2._dl*a*adotoa*EFTOmegaP +4._dl*adotoa*EFTAlpha5V**2 -2._dl*adotoa*(3._dl*EFTAlpha3V**2 +3._dl*a*EFTAlpha3V*EFTAlpha3P &<br>
+& +EFTAlpha4V**2 +a*EFTAlpha4V*EFTAlpha4P))&<br>
+& +1._dl/(1._dl+EFTOmegaV+2._dl*EFTAlpha5V**2)*(a*adotoa*EFTOmegaP+2._dl*adotoa*(EFTAlpha5V**2+2._dl*a*EFTAlpha5V*EFTAlpha5P)&<br>
+& -(1._dl+EFTOmegaV)*(a*adotoa*EFTOmegaP+a*EFT_H0*EFTAlpha2V**3)/(2._dl*(1._dl+EFTOmegaV)+3._dl*EFTAlpha3V**2+EFTAlpha4V**2))*&<br>
+&(+0.5_dl*a*adotoa*EFTOmegaP -2._dl*adotoa*EFTAlpha5V**2 +0.5_dl*a*EFT_H0*EFTAlpha2V**3 +1.5_dl*adotoa*EFTAlpha3V**2&<br>
+& -adotoa*EFTAlpha4V**2 -4._dl*adotoa*EFTAlpha6V**2)&<br>
+& +(EFTAlpha4V**2 +2._dl*EFTAlpha5V**2)/(2._dl*(1._dl+EFTOmegaV) -2._dl*EFTAlpha4V**2)*(EFTgrhoQ +EFTgpresQ +a*adotoa**2*EFTOmegaP&<br>
+& -EFTAlpha4V**2*(Hdot-adotoa**2) +a*adotoa*EFT_H0*EFTAlpha2V**3 +3._dl*EFTAlpha3V**2*(adotoa**2-Hdot))&<br>
+& +k2*(+0.5_dl*EFTAlpha3V**2 +0.5_dl*EFTAlpha4V**2 &<br>
+& +(EFTAlpha4V**2 +2._dl*EFTAlpha5V**2)/(2._dl*(1._dl+EFTOmegaV) -2._dl*EFTAlpha4V**2)*(EFTAlpha3V**2+EFTAlpha4V**2))<br>
+!<br>
+EFTpiE = (EFTc -1.5_dl*a*adotoa**2*EFTOmegaP -0.5_dl*a*adotoa*EFT_H0*(2._dl*EFTAlpha2V**3 +3._dl*a*EFTAlpha2V**2*EFTAlpha2P)&<br>
+& +0.5_dl*EFTAlpha3V**2*(k2-3._dl*Hdot+adotoa**2) +0.5_dl*EFTAlpha4V**2*(k2-Hdot+adotoa**2)&<br>
+& -a*(adotoa*EFTOmegaP+EFT_H0*EFTAlpha2V**3)/(4._dl*(1._dl+EFTOmegaV)+6._dl*EFTAlpha3V**2 +2._dl*EFTAlpha4V**2)*&<br>
+&(-2._dl*adotoa*(a*EFTOmegaP +2._dl*(1._dl+EFTOmegaV)) -2._dl*adotoa*(3._dl*EFTAlpha3V**2+3._dl*a*EFTAlpha3V*EFTAlpha3P&<br>
+& +EFTAlpha4V**2 +a*EFTAlpha4V*EFTAlpha4P))&<br>
+& +1._dl/(1._dl+EFTOmegaV+2._dl*EFTAlpha5V**2)*(a*adotoa*EFTOmegaP+2._dl*adotoa*(EFTAlpha5V**2+2._dl*a*EFTAlpha5V*EFTAlpha5P)&<br>
+& -(1._dl+EFTOmegaV)*(a*adotoa*EFTOmegaP+a*EFT_H0*EFTAlpha2V**3)/(2._dl*(1._dl+EFTOmegaV)+3._dl*EFTAlpha3V**2+EFTAlpha4V**2))*&<br>
+&( +adotoa*(1._dl+EFTOmegaV+0.5_dl*a*EFTOmegaP) +0.5_dl*a*EFT_H0*EFTAlpha2V**3 +1.5_dl*adotoa*EFTAlpha3V**2 +adotoa*EFTAlpha4V**2)&<br>
+& +(EFTAlpha4V**2 +2._dl*EFTAlpha5V**2)/(2._dl*(1._dl+EFTOmegaV) -2._dl*EFTAlpha4V**2)*k2*(EFTAlpha4V**2+EFTAlpha3V**2))*k*z&<br>
+& +1._dl*a*(adotoa*EFTOmegaP+EFT_H0*EFTAlpha2V**3)/(4._dl*(1._dl+EFTOmegaV)+6._dl*EFTAlpha3V**2 +2._dl*EFTAlpha4V**2)*&<br>
+&(grhog_t*clxg +grhor_t*clxr +3._dl*EFT_dgpnu) +(EFTAlpha4V**2 +2._dl*EFTAlpha5V**2)/(2._dl*(1._dl+EFTOmegaV) -2._dl*EFTAlpha4V**2)*k*dgq&<br>
+& -0.5_dl/(1._dl+EFTOmegaV+2._dl*EFTAlpha5V**2)*(a*adotoa*EFTOmegaP+2._dl*adotoa*(EFTAlpha5V**2+2._dl*a*EFTAlpha5V*EFTAlpha5P)&<br>
+& -(1._dl+EFTOmegaV)*(a*adotoa*EFTOmegaP+a*EFT_H0*EFTAlpha2V**3)/(2._dl*(1._dl+EFTOmegaV)+3._dl*EFTAlpha3V**2+EFTAlpha4V**2))*dgrho<br>
+!<br>
+end if<br>
+! 2) Stability check of the theory: some unstable models may slip the stability check performed at the beginning.<br>
+if (CP%EFTflag /=0 .and. a>=EFTturnonpi) then<br>
+!1- Positive gravitational constant:<br>
+if (1._dl +EFTOmegaV <= 0) stop "Negative gravitational constant."<br>
+!2- Ghost instability:<br>
+if (EFTpiA <= 0) stop "Ghost instability."<br>
+!3- Tachionic perturbations:<br>
+!if (EFTpiD < 0) stop "Tachionic perturbations."<br>
+!4- Positive mass:<br>
+!if (EFTpiC < 0) stop "Negative scalaron mass."<br>
+end if<br>
+! 5) Solution of the pi field equation of motion.<br>
+if (CP%EFTflag==0) then<br>
+if (w_lam /= -1 .and. w_Perturb) then<br>
+ayprime(EV%w_ix)= -3*adotoa*(cs2_lam-w_lam)*(clxq+3*adotoa*(1+w_lam)*vq/k) &<br>
+-(1+w_lam)*k*vq -(1+w_lam)*k*z<br>
+ayprime(EV%w_ix+1) = -adotoa*(1-3*cs2_lam)*vq + k*cs2_lam*clxq/(1+w_lam)<br>
+end if<br>
+else if (CP%EFTflag/=0.and.EV%EFTCAMBactive) then<br>
+ayprime(EV%w_ix)=  vq<br>
+ayprime(EV%w_ix+1)= -EFTpiB*vq/EFTpiA - (EFTpiC+ k*k*EFTpiD)*clxq/EFTpiA - EFT_H0*EFTpiE/EFTpiA<br>
+end if<br>
+! 5) Debug code: Print of resuls.<br>
+if (a>=EFTturnonpi.and. DebugEFT) then<br>
+write (8,'(10e15.5)') a, tau, EFTpiA, EFTpiB, EFTpiC, EFTpiD, EFTpiE<br>
+write (4,'(7d15.5)') a, tau, clxq, vq, ayprime(EV%w_ix+1)<br>
+write (5,'(7e15.5)') a, tau, sigma, z, dz, etak<br>
+write (6,'(7e15.5)') a, tau, clxc, clxb, clxg, clxr<br>
+end if<br>
+</span><span style="font-size: 15px;color: red" >
+! Original code:<br>
+! if (w_lam /= -1 .and. w_Perturb) then<br>
+!  ayprime(EV%w_ix)= -3*adotoa*(cs2_lam-w_lam)*(clxq+3*adotoa*(1+w_lam)*vq/k) &<br>
+!  -(1+w_lam)*k*vq -(1+w_lam)*k*z<br>
+!  ayprime(EV%w_ix+1) = -adotoa*(1-3*cs2_lam)*vq + k*cs2_lam*clxq/(1+w_lam)<br>
+! end if<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >Replace:</span></div>
+<div><span style="font-size: 15px;color: black" >
+! EFTCAMB MOD START:<br>
+if (CP%EFTflag==0) then<br>
+gpres=gpres+ (grhog_t+grhor_t)/3 +grhov_t*w_lam<br>
+adotdota=(adotoa*adotoa-gpres)/2<br>
+</span><span style="font-size: 15px;color: red" >
+! Original code:<br>
+! !  ddota/a<br>
+! gpres=gpres+ (grhog_t+grhor_t)/3 +grhov_t*w_lam<br>
+! adotdota=(adotoa*adotoa-gpres)/2<br>
+end if<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div><span style="font-size: 15px;" >Replace:</span></div>
+<div><span style="font-size: 15px;" >
+! EFTCAMB MOD START: shear<br>
+! Define shear derivative to first order<br>
+if (CP%EFTflag==0 .or. .not. EV%EFTCAMBactive) then<br>
+sigmadot = -2*adotoa*sigma-dgs/k+etak<br>
+else if (CP%EFTflag/=0 .and. EV%EFTCAMBactive) then<br>
+sigmadot = 1._dl/EFTeomX*(-2._dl*adotoa*(1._dl+EFTeomV)*sigma +etak&<br>
+& -dgs/k/(1._dl+EFTOmegaV) +EFTeomN/EFT_H0)<br>
+end if<br>
+</span><span style="font-size: 15px;color: red" >
+! Original code:<br>
+! sigmadot = -2*adotoa*sigma-dgs/k+etak<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+
+
+<h2></h2>
+<div class="line"></div>
+<h2></h2>
+<!--end wrap-->
+<div id="spacing"></div>
+<!--hack for ie6 and ie7-->
+
+<center>
+    <div>-4-</div>
+    <div><a href="./guide_EFTCAMB_Oct14_p3.html"> - previous page -</a>
+<div>
+<a href="./guide_EFTCAMB_Oct14_p5.html">- next page - </a></div>
+</div>
+</div>
+</center>
+
+
+</BODY>
+</HTML>

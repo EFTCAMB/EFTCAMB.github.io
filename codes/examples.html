@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <title>EFTCAMB Examples</title>
+
+        <meta charset="utf-8">
+            <link type="text/css" rel="stylesheet" href="../styles/style.css" />
+            <!--[if IE 6]>
+             <script src="js/ie6-transparency.js"></script>
+             <script>DD_belatedPNG.fix('#wrap .line, #header #header-photo');</script>
+             <link rel="stylesheet" href="styles/ie6.css" />
+             <![endif]-->
+            <!--[if IE 7]><link rel="stylesheet" href="styles/ie7.css" /><![endif]-->
+            <!--[if IE 8]><link rel="stylesheet" href="styles/ie8.css" /><![endif]-->
+            <!--[if IE 9]><link rel="stylesheet" href="styles/ie9.css" /><![endif]-->
+
+<meta http-equiv="X-UA-Compatible" content="IE=9" />
+
+<style type="text/css">
+
+</style>
+
+    </head>
+    <body>
+        <div id="wrap">
+
+  <div id="top">
+                <div></div>
+
+
+<div id="div_justify"><b><span style="font-size: 15px;color: ƒfon">
+<center>
+<div class="navbar">
+<a id="nav-home" class="#active" href="./index.html">HOME&nbsp;&nbsp;&nbsp;
+</a>
+||
+<a id="nav-about" href="./index.html#about">&nbsp;&nbsp;&nbsp;ABOUT EFTCAMB&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-code" href="./download.html">&nbsp;&nbsp;&nbsp;CODE&nbsp;&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-team" href="./team.html">&nbsp;&nbsp;&nbsp;TEAM&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./works.html">&nbsp;&nbsp;&nbsp;WORKS&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./examples.html">&nbsp;&nbsp;&nbsp;EXAMPLES&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./index.html#contact">&nbsp;&nbsp;&nbsp;CONTACT&nbsp;&nbsp;&nbsp;</a>
+</div>
+</center>
+</span></b></div>
+<h2></h2>
+<div class="line"></div>
+
+<h2></h2>
+
+<center>
+<h1>
+ <div id="div_justify"><b><span style="font-size: 40px; color:#0b8bbb"> </h1>
+</center>
+</span></b></div>
+
+<center>
+<div  id="top-pic">
+   <img src="../images/EFTCAMB_examples.png" alt="" style="height: 230px;"
+></div>
+</center>
+
+<h1></h1>
+<center> By <a href="http://www.iastro.pt/ia/staffDetails.html?ID=298">N. Frusciante</a>
+and <a href="https://www.universiteitleiden.nl/medewerkers/simone-peirone#tab-1">S. Peirone </a>
+</center>
+
+<h2></h2>
+<div class="line"></div>
+<h2></h2>
+<!--end wrap-->
+<div id="spacing"></div>
+<!--hack for ie6 and ie7-->
+<!div align="right">
+
+<h3></h3>
+ <div id="div_justify"><b><span style="font-size: 15px; color: #0b8bbb">
+In this page we present one example about how to use EFTCAMB/EFTCosmoMC with didactic purposes. The example will
+reflect the main aspects of the modification implemented in CAMB/CosmoMC.
+We will illustrate step by step how to select a built-in model in the Pure EFT branch and how to deal with the stability module and produce the corresponding model's observables.
+</span></b></div>
+
+
+<h2></h2>
+<div class="line"></div>
+
+<h2>Model:</h2>
+
+<div>&#8226 <a id="nav-puremodel" href="#puremodel"> Pure EFT model: selection of the model, stability module and observables;</a></div><br>
+
+<h2></h2>
+<div class="line"></div>
+
+<section id="puremodel">
+<h3> Pure EFT model </h3>
+ <div >
+In the pure EFT branch one works with a given subset of the EFT operators (possibly all), treating their coefficients as free functions. The background is treated via the EFT designer approach, i.e. the expansion history is fixed and a viable form for &#937 is chosen.  In order to use EFTCAMB in the pure mode the user has to choose besides the expansion history the functional form of all the &#947<sub>i</sub>. For this example we will illustrate how to select a built-in parametrizaion for the functional form of the EFT functions. We will also use a built-in form for the equation of state of dark energy. Finally, we will show the corresponding observables for a set of viable parameters.
+</div>
+
+<h4> Selecting the model: </h4>
+
+<div>&#8226 The first step will be to select the flag we want to use. Since we are interested in the pure EFT parametrization we will go in <span style="color:red">params<sub>_</sub>EFT.ini </span> and set <span style="color:red">EFTflag=1</span> and <span style="color:red">PureEFTmodel = 1</span>;  </div>
+
+<div>&#8226 Because the model we consider in this example falls in the Horndeski sub-class, we can select in <span style="color:red">params<sub>_</sub>EFT.ini </span> the option <span style="color:red">PureEFTHorndeski = T </span>, with which &#947<sub>4</sub>, &#947<sub>5</sub> and &#947<sub>6</sub> will be ignored and handled internally. </div>
+
+
+<div>&#8226 We now need to define the EFT functions. For this example we choose to parametrize them with a power law, given by
+ <ul type="circle"><li><p> <span>&#160;&#160;&#160;&#160; &#937(a)=&#937<sup>0</sup>a<sup>&#946<sub>0</sub></sup></span>,</p></li>  </ul>
+</p></li>  </ul>
+ <ul type="circle"><li><p> <span>&#160;&#160;&#160;&#160; &#947<sub>i</sub>(a)=&#947<sub>i</sub><sup>0</sup>a<sup>&#946<sub>i</sub></sup></span>,</p></li>  </ul>
+ <div> To do so, we go to <span style="color:red">params<sub>_</sub>EFT.ini</span> and we select the corrisponding flags:
+<ul type="circle"><li><p> <span>&#160;&#160;&#160;&#160; <span style="color:red"> pureEFTmodelOmega=3 </span>,</ul>
+<ul type="circle"><li><p> <span>&#160;&#160;&#160;&#160; <span style="color:red"> pureEFTmodelGamma1=0 </span>,</ul>
+<ul type="circle"><li><p> <span>&#160;&#160;&#160;&#160; <span style="color:red"> pureEFTmodelGamma2=0 </span>,</ul>
+<ul type="circle"><li><p> <span>&#160;&#160;&#160;&#160; <span style="color:red"> pureEFTmodelGamma3=3 </span>,</ul>
+</div> where the 0 stands for the zero parametrization and the 3 for the power law ( take a look at <span style="color:red">params<sub>_</sub>EFT.ini</span> for many more built-in options!)
+</p></li>  </ul>
+ </div>
+<div>&#8226 Let us now select the evolution of the equation of state for the dark energy. We will use a CPL parametrization, i.e. w<sub>DE</sub>=w<sub>0</sub>+w<sub>a</sub>(1-a).
+One has to go to <span style="color:red">params<sub>_</sub>EFT.ini</span> and select <span style="color:red"> EFTwDE = 2</span> .
+</div>
+
+<div>&#8226 At this point, since we want to show some physical observables for this model we need to chose a set of viable parameters, in the <span style="color:red">params<sub>_</sub>EFT.ini</span>. First of all we choose the values of w<sub>0</sub> and w<sub>a</sub> of the CPL parametrization, by setting
+
+
+<ul type="circle"><li><p> <span>&#160;&#160;&#160;&#160; <span style="color:red">EFTw0  = -0.1</span>,</ul>
+<ul type="circle"><li><p> <span>&#160;&#160;&#160;&#160; <span style="color:red">EFTwa  = -1.2</span>,</ul></p></li>
+
+Then we chose the parameters in the power law definition of &#937(a), namely &#937<sup>0</sup> and &#946<sub>0</sub>
+
+<ul type="circle"><li><p> <span>&#160;&#160;&#160;&#160; <span style="color:red">EFTOmega0 = 2.0</span>,</ul>
+<ul type="circle"><li><p> <span>&#160;&#160;&#160;&#160; <span style="color:red">EFTOmegaExp = 1.
+</span>,</ul></p></li>
+
+And the same for &#947<sub>3</sub><sup>0</sup> and &#946<sub>3</sub>
+
+<ul type="circle"><li><p> <span>&#160;&#160;&#160;&#160; <span style="color:red">EFTGamma30 = 2.0</span>,</ul>
+<ul type="circle"><li><p> <span>&#160;&#160;&#160;&#160; <span style="color:red">EFTGamma3Exp = 1.0
+</span>.</ul></p></li>
+
+<h4> Stability module: </h4>
+
+<div>
+One can easily verify that by using the default stability requirements with the above set of parameters one gets an instability warning saying that ''Model specific stability criteria are not met''. The present example serves to show how to use and/or modify the stability module in EFTCAMB, then we will take advantage by it showing how to modify one of the stability requirements.
+
+One can interact with the stability module of EFTCAMB by setting the flags (see numerical notes for the definitions of the stability conditions)
+<ul type="circle"><li><p> <span>&#160;&#160;&#160;&#160;<span style="color:red">EFT_mathematical_stability </span>,</ul>
+<ul type="circle"><li><p> <span>&#160;&#160;&#160;&#160;<span style="color:red">EFT_physical_stability </span>,</ul>
+<ul type="circle"><li><p> <span>&#160;&#160;&#160;&#160;<span style="color:red">EFT_additional_priors </span>,</ul>
+
+equal to true (T, the default choice) or false (F) in <span style="color:red">params<sub>_</sub>EFT.ini</span>.
+ In our example the last stability condition is not satisfied, since the choice of the CPL parameters leads to a not verified cosmic acceleration prior, then we get the error ''Model specific stability criteria are not met'' and the spectra are not be computed. Thus, in order to run the model, we have to set <span style="color:red">EFT_additional_priors=F</span>.
+</div>
+
+<div>
+Let us remark that this example is purely illustrative, its physical interpretation is out of our scope. In general the  user can deal with the above stability requirements according to the physical model under analysis by turning to T/F any of the above stability flags. However, while the last two conditions are related to  physical requirements the first one just ensures that the perturbations in the dark sector are stable (i.e. they do not grow exponentially). Turning this flag to F may cause the observables to be completely destroyed, thus it needs to be carefully handled.
+</div>
+
+
+<h4> Computing the observables: </h4>
+
+<div>&#8226 In EFTCAMB the outputs are handled in the same way as in CAMB. In particular one can look at the following files: </div>
+
+<ul type="circle"><li><p> &#160;&#160;&#160;&#160; ROOT_scalCls.dat: l multipole, TT, EE, TE, PP, TP Power spectra. Some of these outputs for our example are plotted below:
+<center>
+<img src="../examples/pureEFT/cl.jpg"  alt=""  style="height: 300px;">
+</center>
+<ul type="circle"><li><p> &#160;&#160;&#160;&#160; ROOT_matterpower.dat: k mode, P(k) (matter Power spectrum at the chosen redshift). Again, the P(k) for our example is plotted below, at different redshift:
+<center>
+<img src="../examples/pureEFT/pk.jpg"  alt=""  style="height: 300px;">
+</center>
+
+<h2></h2>
+<div class="line"></div>
+
+<!--end wrap-->
+<div id="spacing"></div>
+<!--hack for ie6 and ie7-->
+<!div align="right">
+
+<center>
+    <div><a href="./examples.html"> - Back to the top - </a>
+</div>
+
+</center>
+
+</div>
+<!--end wrap-->
+<div id="spacing"></div>
+<!--hack for ie6 and ie7-->
+</body>
+</html>

@@ -1,0 +1,774 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+ <title>Guide to EFTCAMB_May14_p3</title>
+<meta charset="utf-8">
+<link type="text/css" rel="stylesheet" href="../styles/style.css" />
+</head>
+
+<body>
+        <div id="wrap">
+            <div id="top">
+
+
+<div id="div_justify"><b><span style="font-size: 15px;color: ƒfon">
+<center>
+<div class="navbar">
+<a id="nav-home" class="#active" href="./index.html">HOME&nbsp;&nbsp;&nbsp;
+</a>
+||
+<a id="nav-about" href="./index.html#about">&nbsp;&nbsp;&nbsp;ABOUT EFTCAMB&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-code" href="./download.html">&nbsp;&nbsp;&nbsp;CODE&nbsp;&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-team" href="./team.html">&nbsp;&nbsp;&nbsp;TEAM&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./works.html">&nbsp;&nbsp;&nbsp;WORKS&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./examples.html">&nbsp;&nbsp;&nbsp;EXAMPLES&nbsp;&nbsp;&nbsp;</a>
+||
+<a id="nav-contact" class="smoothscroll" href="./index.html#contact">&nbsp;&nbsp;&nbsp;CONTACT&nbsp;&nbsp;&nbsp;</a>
+</div>
+</center>
+</span></b></div>
+<h2></h2>
+<div class="line"></div>
+
+<h1></h1>
+<center> </span><span style="font-size: 40px">Guide to  </span> <span style="color: #0b8bbb;font-size: 40px">EFTCAMB_May14</span>
+</center>
+<h1></h1>
+
+<div id="top">
+    <h3></h3>
+    <div id="top-pic"><img src="../images/Image_Xi_V2.png" alt="" /></div>
+</div>
+<h3></h3>
+
+<h2></h2>
+<div class="line"></div><br><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Replace: Before "pig = 32._dl/45/opacity*k*(sigma+vb)"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: <br>
+       if (CP%EFTflag==0) then<br>
+       gpres=gpres+ (grhog_t+grhor_t)/3 +grhov_t*w_lam<br>
+       adotdota=(adotoa*adotoa-gpres)/2<br>
+       end if<br>
+<br></span><span style="font-size: 15px; color: red">
+!... Original:<br>
+!        gpres=gpres+ (grhog_t+grhor_t)/3 +grhov_t*w_lam<br>
+!        adotdota=(adotoa*adotoa-gpres)/2<br>
+</span><span style="font-size: 15px; color: black">
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Replace: Before "!Once know slip, recompute qgdot, pig, pigdot"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: shear<br>
+             ! Define shear derivative to first order<br>
+             if (CP%EFTflag==0 .or. .not. EV%EFTCAMBactive) then <br>
+             sigmadot = -2*adotoa*sigma-dgs/k+etak<br>
+             else if (CP%EFTflag/=0 .and. EV%EFTCAMBactive) then   <br>
+             sigmadot = 1._dl/EFTeomX*(-2._dl*adotoa*(1._dl+EFTeomV)*sigma +etak&<br>
+                      & -dgs/k/(1._dl+EFTOmegaV) +EFTeomN/EFT_H0)<br>
+             end if<br>
+<br></span><span style="font-size: 15px; color: red">
+!... Original:<br>
+!            ! Define shear derivative to first order<br>
+!            sigmadot = -2*adotoa*sigma-dgs/k+etak<br>
+</span><span style="font-size: 15px; color: black">
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<div>
+  <span style="font-size: 15px;">
+  Add: after "end subroutine derivst"<br>
+  </span></div><br>
+<div><span style="font-size: 15px; color: black">
+! EFTCAMB MOD START: subroutine which sets initial conditions for pi. <br>
+    subroutine EFTpiInitialConditions(y,EV,tau)<br>
+    use ThermoData<br>
+    implicit none<br>
+    type(EvolutionVars) EV<br>
+    real(dl) :: y(EV%nvar)<br>
+<br>
+        real(dl) k, k2,a, a2, etak, clxc, clxb, vb, clxr, clxg, &<br>
+             grhob_t,grhor_t,grhoc_t,grhog_t,grhov_t, gpres, grho, adotoa, &<br>
+             dgrho, z, dz, adotdota, opacity, cs2, dopacity, tau, dgq, qr, qg<br>
+<br>
+        ! background quantities.<br>
+        real(dl) EFT_H0,Hdot, Hdotdot, PiFieldScale<br>
+        ! storage for EFT functions.<br>
+        real(dl) EFTOmegaV, EFTOmegaP, EFTOmegaPP, EFTOmegaPPP<br>
+        real(dl) EFTAlpha1V, EFTAlpha1P, EFTAlpha2V, EFTAlpha2P, EFTAlpha3V, EFTAlpha3P              <br>
+        real(dl) EFTAlpha4V, EFTAlpha4P, EFTAlpha4PP, EFTAlpha5V, EFTAlpha5P, EFTAlpha6V, EFTAlpha6P <br>
+        ! Background quantities.<br>
+        real(dl) EFTc, EFTLambda, EFTcdot, EFTLambdadot<br>
+        real(dl) EFTgrhoq, EFTgpresq, EFTgrhodotq, EFTgpresdotq<br>
+        ! perturbations quantities.<br>
+        real(dl) EFTpiA, EFTpiB, EFTpiC, EFTpiD, EFTpiE, EFTpiAdot, EFTpiEdot ! pi field equation.<br>
+        !<br>
+        real(dl) temp1, temp2<br>
+<br>
+    k=EV%k_buf<br>
+    k2=EV%k2_buf<br>
+    a=y(1)<br>
+    a2=a*a<br>
+    etak=y(2)<br>
+    clxc=y(3)<br>
+    clxb=y(4)<br>
+    vb=y(5)<br>
+    !  Compute expansion rate from: grho 8*pi*rho*a**2<br>
+    grhob_t=grhob/a<br>
+    grhoc_t=grhoc/a<br>
+    grhor_t=grhornomass/a2<br>
+    grhog_t=grhog/a2<br>
+    grhov_t=grhov*EFTw(a,2)<br>
+    !  Get sound speed and ionisation fraction.<br>
+    if (EV%TightCoupling) then<br>
+        call thermo(tau,cs2,opacity,dopacity)<br>
+    else<br>
+        call thermo(tau,cs2,opacity)<br>
+    end if<br>
+    gpres=0<br>
+    grho=grhob_t+grhoc_t+grhor_t+grhog_t+grhov_t<br>
+    adotoa=sqrt(grho/3)<br>
+    dgrho=grhob_t*clxb+grhoc_t*clxc<br>
+<br>
+    z=(0.5_dl*dgrho/k + etak)/adotoa<br>
+    dz= -2._dl*adotoa*z + etak<br>
+        if (EV%no_nu_multpoles) then<br>
+        !RSA approximation of arXiv:1104.2933, dropping opactity terms in the velocity<br>
+        !Approximate total density variables with just matter terms<br>
+        clxr=-4*dz/k<br>
+        qr=-4._dl/3*z<br>
+        else<br>
+        !  Massless neutrinos<br>
+        clxr=y(EV%r_ix)<br>
+        qr  =y(EV%r_ix+1)<br>
+        end if<br>
+        if (EV%no_phot_multpoles) then<br>
+        if (.not. EV%no_nu_multpoles) then<br>
+        clxg=-4*dz/k-4/k*opacity*(vb+z)<br>
+        qg=-4._dl/3*z<br>
+        else<br>
+        clxg=clxr-4/k*opacity*(vb+z)<br>
+        qg=qr<br>
+        end if<br>
+        else<br>
+        !  Photons<br>
+        clxg=y(EV%g_ix)<br>
+        qg=y(EV%g_ix+1)<br>
+        end if<br>
+<br>
+    dgrho=grhob_t*clxb+grhoc_t*clxc + grhog_t*clxg+grhor_t*clxr<br>
+    dgq=grhob_t*vb + grhog_t*qg+grhor_t*qr<br>
+<br>
+    z=(0.5_dl*dgrho/k + etak)/adotoa<br>
+    dz= -2._dl*adotoa*z + etak<br>
+<br>
+  ! EFT initial stuff<br>
+      EFT_H0 = (CP%h0/c_EFT)*1000._dl<br>
+  ! Compute FRW background quantities<br>
+      gpres=+(grhog_t+grhor_t)/3._dl +EFTw(a,0)*grhov_t<br>
+      adotdota=(adotoa*adotoa-gpres)/2._dl<br>
+      Hdot =adotdota-adotoa**2._dl<br>
+      Hdotdot = 2._dl*adotoa*Hdot &<br>
+       & + 0.5_dl*adotoa*(grhob_t + grhoc_t + 8._dl*(grhog_t+grhor_t)/3._dl)&<br>
+       & + 0.5_dl*adotoa*grhov_t*((1._dl+EFTw(a,0))*(1._dl+3._dl*EFTw(a,0))-a*EFTw(a,1))<br>
+  ! Compute EFT background quantities<br>
+      EFTOmegaV = EFTOmega(a,0)<br>
+      EFTOmegaP = EFTOmega(a,1)<br>
+      EFTOmegaPP = EFTOmega(a,2)<br>
+      EFTOmegaPPP = EFTOmega(a,3)<br>
+      EFTAlpha1V  = EFTAlpha1(a,0)<br>
+      EFTAlpha1P  = EFTAlpha1(a,1)<br>
+      EFTAlpha2V  = EFTAlpha2(a,0)<br>
+      EFTAlpha2P  = EFTAlpha2(a,1)<br>
+      EFTAlpha3V  = EFTAlpha3(a,0)<br>
+      EFTAlpha3P  = EFTAlpha3(a,1)<br>
+      EFTAlpha4V  = EFTAlpha4(a,0)<br>
+      EFTAlpha4P  = EFTAlpha4(a,1)<br>
+      EFTAlpha4PP = EFTAlpha4(a,2)<br>
+      EFTAlpha5V  = EFTAlpha5(a,0)<br>
+      EFTAlpha5P  = EFTAlpha5(a,1)<br>
+      EFTAlpha6V  = EFTAlpha6(a,0)<br>
+      EFTAlpha6P  = EFTAlpha6(a,1)<br>
+      if (CP%EFTflag==1) then<br>
+        !8*pi*G*c*a^2<br>
+        EFTc = (adotoa*adotoa - Hdot)*(EFTOmegaV + a*EFTOmegaP*0.5_dl) &<br>
+              & - 0.5_dl*a2*adotoa*adotoa*EFTOmegaPP&<br>
+              & + 0.5_dl*grhov_t*(1._dl+EFTw(a,0))<br>
+        !8*pi*G*Lambda*a^2<br>
+        EFTLambda = +EFTw(a,0)*grhov_t &<br>
+              &-EFTOmegaV*(2._dl*Hdot+adotoa**2._dl) &<br>
+              &-a*EFTOmegaP*(2._dl*adotoa**2._dl + Hdot) &<br>
+              &-a2*adotoa**2._dl*EFTOmegaPP<br>
+        !EFT C DOT: 8*pi*G*cdot*a^2<br>
+        EFTcdot = -EFTOmegaV*(Hdotdot-4._dl*adotoa*Hdot+2._dl*adotoa*adotoa*adotoa) &<br>
+              & + 0.5_dl*a*EFTOmegaP*(-Hdotdot+adotoa*Hdot+adotoa*adotoa*adotoa)&<br>
+              & +0.5_dl*a2*adotoa*EFTOmegaPP*(adotoa*adotoa-3._dl*Hdot)&<br>
+              & -0.5_dl*a*a2*adotoa*adotoa*adotoa*EFTOmegaPPP&<br>
+              & +0.5_dl*adotoa*grhov_t*(-3._dl*(1._dl+EFTw(a,0))**2 + a*EFTw(a,1))<br>
+        !EFT LAMBDA DOT: 8*pi*G*Ldot*a^2<br>
+        EFTLambdadot = -2._dl*EFTOmegaV*(Hdotdot-adotoa*Hdot-adotoa*adotoa*adotoa)&<br>
+              & - a*EFTOmegaP*(4._dl*adotoa*Hdot+Hdotdot)&<br>
+              & -a2*EFTOmegaPP*adotoa*(3._dl*Hdot+2._dl*adotoa*adotoa)&<br>
+              & -a*a2*EFTOmegaPPP*adotoa*adotoa*adotoa&<br>
+              & +grhov_t*adotoa*(a*EFTw(a,1)-3._dl*EFTw(a,0)*(1._dl+EFTw(a,0)))<br>
+      else if (CP%EFTflag==2) then<br>
+        EFTc = EFTcTemp(a,0)<br>
+        EFTcdot = EFTcTemp(a,1)<br>
+        EFTLambda = EFTLambdaTemp(a,0)<br>
+        EFTLambdadot = EFTLambdaTemp(a,1)<br>
+      end if<br>
+      EFTgrhoq = 2._dl*EFTc -EFTLambda -3._dl*a*adotoa*adotoa*EFTOmegaP<br>
+      EFTgpresq = EFTLambda + a2*adotoa*adotoa*EFTOmegaPP&<br>
+                & +a*EFTOmegaP*(Hdot + 2._dl*adotoa*adotoa)<br>
+      EFTgrhodotq = -3._dl*adotoa*(EFTgrhoq+EFTgpresq) + 3._dl*a*adotoa**3._dl*EFTOmegaP<br>
+      EFTgpresdotq = EFTLambdadot +a2*a*adotoa**3*EFTOmegaPPP + 3._dl*a2*adotoa*Hdot*EFTOmegaPP&<br>
+                & +a*EFTOmegaP*Hdotdot +3._dl*a*adotoa*Hdot*EFTOmegaP +2._dl*a2*adotoa**3*EFTOmegaPP&<br>
+                & -2._dl*a*adotoa**3*EFTOmegaP<br>
+  ! Compute E which is the only one that we cannot compute outside.<br>
+     EFTpiE = (EFTc -1.5_dl*a*adotoa**2*EFTOmegaP -0.5_dl*a*adotoa*EFT_H0*(2._dl*EFTAlpha2V**3 +3._dl*a*EFTAlpha2V**2*EFTAlpha2P)&<br>
+            & +0.5_dl*EFTAlpha3V**2*(k2-3._dl*Hdot+adotoa**2) +0.5_dl*EFTAlpha4V**2*(k2-Hdot+adotoa**2)&<br>
+            & -a*(adotoa*EFTOmegaP+EFT_H0*EFTAlpha2V**3)/(4._dl*(1._dl+EFTOmegaV)+6._dl*EFTAlpha3V**2 +2._dl*EFTAlpha4V**2)*&<br>
+            &(-2._dl*adotoa*(a*EFTOmegaP +2._dl*(1._dl+EFTOmegaV)) -2._dl*adotoa*(3._dl*EFTAlpha3V**2+3._dl*a*EFTAlpha3V*EFTAlpha3P&<br>
+            & +EFTAlpha4V**2 +a*EFTAlpha4V*EFTAlpha4P))&<br>
+            & +1._dl/(1._dl+EFTOmegaV+2._dl*EFTAlpha5V**2)*(a*adotoa*EFTOmegaP+2._dl*adotoa*(EFTAlpha5V**2+2._dl*a*EFTAlpha5V*EFTAlpha5P)&<br>
+            & -(1._dl+EFTOmegaV)*(a*adotoa*EFTOmegaP+a*EFT_H0*EFTAlpha2V**3)/(2._dl*(1._dl+EFTOmegaV)+3._dl*EFTAlpha3V**2+EFTAlpha4V**2))*&<br>
+            &( +adotoa*(1._dl+EFTOmegaV+0.5_dl*a*EFTOmegaP) +0.5_dl*a*EFT_H0*EFTAlpha2V**3 +1.5_dl*adotoa*EFTAlpha3V**2 +adotoa*EFTAlpha4V**2)&<br>
+            & +(EFTAlpha4V**2 +2._dl*EFTAlpha5V**2)/(2._dl*(1._dl+EFTOmegaV) -2._dl*EFTAlpha4V**2)*k2*(EFTAlpha4V**2+EFTAlpha3V**2))*k*z&<br>
+            & +1._dl*a*(adotoa*EFTOmegaP+EFT_H0*EFTAlpha2V**3)/(4._dl*(1._dl+EFTOmegaV)+6._dl*EFTAlpha3V**2 +2._dl*EFTAlpha4V**2)*&<br>
+            &(grhog_t*clxg+grhor_t*clxr) ++(EFTAlpha4V**2 +2._dl*EFTAlpha5V**2)/(2._dl*(1._dl+EFTOmegaV) -2._dl*EFTAlpha4V**2)*k*dgq&<br>
+            & -0.5_dl/(1._dl+EFTOmegaV+2._dl*EFTAlpha5V**2)*(a*adotoa*EFTOmegaP+2._dl*adotoa*(EFTAlpha5V**2+2._dl*a*EFTAlpha5V*EFTAlpha5P)&<br>
+            & -(1._dl+EFTOmegaV)*(a*adotoa*EFTOmegaP+a*EFT_H0*EFTAlpha2V**3)/(2._dl*(1._dl+EFTOmegaV)+3._dl*EFTAlpha3V**2+EFTAlpha4V**2))*dgrho<br>
+  ! Compute Edot. This is just for background operators.<br>
+     if ((CP%EFTflag==1.and.CP%PureEFTmodelAlpha1==0.and.CP%PureEFTmodelAlpha2==0.and.&<br>
+         &CP%PureEFTmodelAlpha3==0.and.CP%PureEFTmodelAlpha4==0.and.CP%PureEFTmodelAlpha5==0.and.&<br>
+         &CP%PureEFTmodelAlpha6==0).or.(CP%EFTflag==2)) then<br>
+     EFTpiEdot = (EFTcdot +0.75_dl*(2._dl*adotoa*Hdot*a2*EFTOmegaP**2/(1._dl+EFTOmegaV)&<br>
+        & +2._dl*adotoa**3*a**3*EFTOmegaP*EFTOmegaPP/(1._dl + EFTOmegaV)-a**3*adotoa**3*EFTOmegaP**3/(1._dl+EFTOmegaV)**2))*k*z &<br>
+        & +(EFTc+0.75_dl*adotoa**2*(a2*EFTOmegaP**2)/(1._dl+EFTOmegaV))*k*dz +2._dl*adotoa*EFTpiE&<br>
+        & +(-dgrho+(grhog_t*clxg+grhor_t*clxr))/4._dl*(+a*adotoa**2*EFTOmegaP +a*Hdot*EFTOmegaP+a2*adotoa**2*EFTOmegaPP &<br>
+        & -a2*adotoa**2*EFTOmegaP**2/(1._dl+EFTOmegaV))/(1._dl+EFTOmegaV)&<br>
+        & -adotoa/4._dl*a*EFTOmegaP/(1._dl+EFTOmegaV)*(grhob_t*(-k*(z+vb)-3._dl*adotoa*clxb) + grhoc_t*(-k*z -3._dl*adotoa*clxc))<br>
+    else<br>
+    EFTpiEdot = 0._dl<br>
+    end if<br>
+  ! Write initial conditions for pi and pidot<br>
+<br>
+    ! 1- Test initial conditions<br>
+    y(EV%w_ix)= 0._dl<br>
+    y(EV%w_ix+1)= 0._dl<br>
+    ! 2- Initial conditions on the source<br>
+    if (EFTpiCfunction(a,k)+k*k*EFTpiDfunction(a,k)/=0) then<br>
+     y(EV%w_ix)= -EFT_H0*EFTpiE/(EFTpiCfunction(a,k)+k*k*EFTpiDfunction(a,k))<br>
+     y(EV%w_ix+1)= EFT_H0*(EFTpiE/(EFTpiCfunction(a,k)+k*k*EFTpiDfunction(a,k))**2*a*adotoa*(EFTpiCdotFunction(a,k)+k2*EFTpiDdotFunction(a,k))&<br>
+                & - EFTpiEdot/(EFTpiCfunction(a,k)+k2*EFTpiDfunction(a,k)))<br>
+    else<br>
+     y(EV%w_ix)= 0._dl<br>
+     y(EV%w_ix+1)= 0._dl<br>
+    end if<br>
+<br>
+     end subroutine EFTpiInitialConditions<br>
+<br>
+function EFTpiAfunction(a,k)<br>
+    use ModelParams<br>
+    implicit none<br>
+<br>
+        real(dl) EFTpiAfunction<br>
+        real(dl), intent(IN) :: a, k<br>
+        real(dl) a2,k2, grhob_t,grhor_t,grhoc_t,grhog_t,grhov_t, gpres, grho, adotoa, adotdota<br>
+<br>
+        ! background quantities.<br>
+        real(dl) EFT_H0,Hdot, Hdotdot<br>
+        ! storage for EFT functions.<br>
+        real(dl) EFTOmegaV, EFTOmegaP, EFTOmegaPP, EFTOmegaPPP<br>
+        real(dl) EFTAlpha1V, EFTAlpha1P, EFTAlpha2V, EFTAlpha2P, EFTAlpha3V, EFTAlpha3P              <br>
+        real(dl) EFTAlpha4V, EFTAlpha4P, EFTAlpha4PP, EFTAlpha5V, EFTAlpha5P, EFTAlpha6V, EFTAlpha6P <br>
+        ! Background quantities.<br>
+        real(dl) EFTc, EFTpiA<br>
+<br>
+    a2 = a*a<br>
+    k2 = k*k<br>
+    EFT_H0 = (CP%h0/c_EFT)*1000._dl<br>
+    !  Compute expansion rate from: grho 8*pi*rho*a**2<br>
+    grhob_t=grhob/a<br>
+    grhoc_t=grhoc/a<br>
+    grhor_t=grhornomass/a2<br>
+    grhog_t=grhog/a2<br>
+    grhov_t=grhov*EFTw(a,2)<br>
+    grho=grhob_t+grhoc_t+grhor_t+grhog_t+grhov_t<br>
+  ! Compute FRW background quantities<br>
+      adotoa=sqrt(grho/3)<br>
+      gpres=+(grhog_t+grhor_t)/3._dl +EFTw(a,0)*grhov_t<br>
+      adotdota=(adotoa*adotoa-gpres)/2._dl<br>
+      Hdot =adotdota-adotoa**2._dl<br>
+      Hdotdot = 2._dl*adotoa*Hdot &<br>
+       & + 0.5_dl*adotoa*(grhob_t + grhoc_t + 8._dl*(grhog_t+grhor_t)/3._dl)&<br>
+       & + 0.5_dl*adotoa*grhov_t*((1._dl+EFTw(a,0))*(1._dl+3._dl*EFTw(a,0))-a*EFTw(a,1))<br>
+  ! Compute EFT background quantities<br>
+      EFTOmegaV   = EFTOmega(a,0)<br>
+      EFTOmegaP   = EFTOmega(a,1)<br>
+      EFTOmegaPP  = EFTOmega(a,2)<br>
+      EFTOmegaPPP = EFTOmega(a,3)<br>
+      EFTAlpha1V  = EFTAlpha1(a,0)<br>
+      EFTAlpha1P  = EFTAlpha1(a,1)<br>
+      EFTAlpha2V  = EFTAlpha2(a,0)<br>
+      EFTAlpha2P  = EFTAlpha2(a,1)<br>
+      EFTAlpha3V  = EFTAlpha3(a,0)<br>
+      EFTAlpha3P  = EFTAlpha3(a,1)<br>
+      EFTAlpha4V  = EFTAlpha4(a,0)<br>
+      EFTAlpha4P  = EFTAlpha4(a,1)<br>
+      EFTAlpha4PP = EFTAlpha4(a,2)<br>
+      EFTAlpha5V  = EFTAlpha5(a,0)<br>
+      EFTAlpha5P  = EFTAlpha5(a,1)<br>
+      EFTAlpha6V  = EFTAlpha6(a,0)<br>
+      EFTAlpha6P  = EFTAlpha6(a,1)<br>
+      if (CP%EFTflag==1) then<br>
+        !8*pi*G*c*a^2<br>
+        EFTc = (adotoa*adotoa - Hdot)*(EFTOmegaV + a*EFTOmegaP*0.5_dl) &<br>
+              & - 0.5_dl*a2*adotoa*adotoa*EFTOmegaPP&<br>
+              & + 0.5_dl*grhov_t*(1._dl+EFTw(a,0))<br>
+      else if (CP%EFTflag==2) then<br>
+        EFTc = EFTcTemp(a,0)<br>
+      end if<br>
+<br>
+    EFTpiA = EFTc +2*a2*EFT_H0**2*EFTAlpha1V**4 +3._dl/2._dl*a2*(adotoa*EFTOmegaP+EFT_H0*EFTAlpha2V**3)**2&<br>
+            &/(2._dl*(1+EFTOmegaV)+EFTAlpha3V**2+EFTAlpha4V**2) +4._dl*a2*k2*EFTAlpha6V**2<br>
+<br>
+    EFTpiAfunction = EFTpiA<br>
+    return<br>
+    end function EFTpiAfunction<br>
+<br>
+function EFTpiBfunction(a,k)<br>
+    use ModelParams<br>
+    implicit none<br>
+<br>
+        real(dl) EFTpiBfunction<br>
+        real(dl), intent(IN) :: a,k<br>
+        real(dl) a2,k2,grhob_t,grhor_t,grhoc_t,grhog_t,grhov_t, gpres, grho, adotoa,adotdota<br>
+        ! background quantities.<br>
+        real(dl) EFT_H0,Hdot, Hdotdot<br>
+        ! storage for EFT functions.<br>
+        real(dl) EFTOmegaV, EFTOmegaP, EFTOmegaPP, EFTOmegaPPP<br>
+        real(dl) EFTAlpha1V, EFTAlpha1P, EFTAlpha2V, EFTAlpha2P, EFTAlpha3V, EFTAlpha3P         <br>
+        real(dl) EFTAlpha4V, EFTAlpha4P, EFTAlpha4PP, EFTAlpha5V, EFTAlpha5P, EFTAlpha6V, EFTAlpha6P <br>
+        ! Background quantities.<br>
+        real(dl) EFTc, EFTLambda, EFTcdot, EFTLambdadot<br>
+        real(dl) EFTgrhoq, EFTgpresq, EFTgrhodotq, EFTgpresdotq<br>
+        ! perturbations quantities.<br>
+        real(dl) EFTpiB<br>
+<br>
+    a2 = a*a<br>
+    k2 = k*k<br>
+    EFT_H0 = (CP%h0/c_EFT)*1000._dl<br>
+    !  Compute expansion rate from: grho 8*pi*rho*a**2<br>
+    grhob_t=grhob/a<br>
+    grhoc_t=grhoc/a<br>
+    grhor_t=grhornomass/a2<br>
+    grhog_t=grhog/a2<br>
+    grhov_t=grhov*EFTw(a,2)<br>
+    grho=grhob_t+grhoc_t+grhor_t+grhog_t+grhov_t<br>
+  ! Compute FRW background quantities<br>
+      adotoa=sqrt(grho/3)<br>
+      gpres=+(grhog_t+grhor_t)/3._dl +EFTw(a,0)*grhov_t<br>
+      adotdota=(adotoa*adotoa-gpres)/2._dl<br>
+      Hdot =adotdota-adotoa**2._dl<br>
+      Hdotdot = 2._dl*adotoa*Hdot &<br>
+       & + 0.5_dl*adotoa*(grhob_t + grhoc_t + 8._dl*(grhog_t+grhor_t)/3._dl)&<br>
+       & + 0.5_dl*adotoa*grhov_t*((1._dl+EFTw(a,0))*(1._dl+3._dl*EFTw(a,0))-a*EFTw(a,1))<br>
+  ! Compute EFT background quantities<br>
+      EFTOmegaV   = EFTOmega(a,0)<br>
+      EFTOmegaP   = EFTOmega(a,1)<br>
+      EFTOmegaPP  = EFTOmega(a,2)<br>
+      EFTOmegaPPP = EFTOmega(a,3)<br>
+      EFTAlpha1V  = EFTAlpha1(a,0)<br>
+      EFTAlpha1P  = EFTAlpha1(a,1)<br>
+      EFTAlpha2V  = EFTAlpha2(a,0)<br>
+      EFTAlpha2P  = EFTAlpha2(a,1)<br>
+      EFTAlpha3V  = EFTAlpha3(a,0)<br>
+      EFTAlpha3P  = EFTAlpha3(a,1)<br>
+      EFTAlpha4V  = EFTAlpha4(a,0)<br>
+      EFTAlpha4P  = EFTAlpha4(a,1)<br>
+      EFTAlpha4PP = EFTAlpha4(a,2)<br>
+      EFTAlpha5V  = EFTAlpha5(a,0)<br>
+      EFTAlpha5P  = EFTAlpha5(a,1)<br>
+      EFTAlpha6V  = EFTAlpha6(a,0)<br>
+      EFTAlpha6P  = EFTAlpha6(a,1)<br>
+      if (CP%EFTflag==1) then<br>
+        !8*pi*G*c*a^2<br>
+        EFTc = (adotoa*adotoa - Hdot)*(EFTOmegaV + a*EFTOmegaP*0.5_dl) &<br>
+              & - 0.5_dl*a2*adotoa*adotoa*EFTOmegaPP&<br>
+              & + 0.5_dl*grhov_t*(1._dl+EFTw(a,0))<br>
+        !8*pi*G*Lambda*a^2<br>
+        EFTLambda = +EFTw(a,0)*grhov_t &<br>
+              &-EFTOmegaV*(2._dl*Hdot+adotoa**2._dl) &<br>
+              &-a*EFTOmegaP*(2._dl*adotoa**2._dl + Hdot) &<br>
+              &-a2*adotoa**2._dl*EFTOmegaPP<br>
+        !EFT C DOT: 8*pi*G*cdot*a^2<br>
+        EFTcdot = -EFTOmegaV*(Hdotdot-4._dl*adotoa*Hdot+2._dl*adotoa*adotoa*adotoa) &<br>
+              & + 0.5_dl*a*EFTOmegaP*(-Hdotdot+adotoa*Hdot+adotoa*adotoa*adotoa)&<br>
+              & +0.5_dl*a2*adotoa*EFTOmegaPP*(adotoa*adotoa-3._dl*Hdot)&<br>
+              & -0.5_dl*a*a2*adotoa*adotoa*adotoa*EFTOmegaPPP&<br>
+              & +0.5_dl*adotoa*grhov_t*(-3._dl*(1._dl+EFTw(a,0))**2 + a*EFTw(a,1))<br>
+        !EFT LAMBDA DOT: 8*pi*G*Ldot*a^2<br>
+        EFTLambdadot = -2._dl*EFTOmegaV*(Hdotdot-adotoa*Hdot-adotoa*adotoa*adotoa)&<br>
+              & - a*EFTOmegaP*(4._dl*adotoa*Hdot+Hdotdot)&<br>
+              & -a2*EFTOmegaPP*adotoa*(3._dl*Hdot+2._dl*adotoa*adotoa)&<br>
+              & -a*a2*EFTOmegaPPP*adotoa*adotoa*adotoa&<br>
+              & +grhov_t*adotoa*(a*EFTw(a,1)-3._dl*EFTw(a,0)*(1._dl+EFTw(a,0)))<br>
+      else if (CP%EFTflag==2) then<br>
+        EFTc = EFTcTemp(a,0)<br>
+        EFTcdot = EFTcTemp(a,1)<br>
+        EFTLambda = EFTLambdaTemp(a,0)<br>
+        EFTLambdadot = EFTLambdaTemp(a,1)<br>
+      end if<br>
+      EFTgrhoq = 2._dl*EFTc -EFTLambda -3._dl*a*adotoa*adotoa*EFTOmegaP<br>
+      EFTgpresq = EFTLambda + a2*adotoa*adotoa*EFTOmegaPP&<br>
+                & +a*EFTOmegaP*(Hdot + 2._dl*adotoa*adotoa)<br>
+      EFTgrhodotq = -3._dl*adotoa*(EFTgrhoq+EFTgpresq) + 3._dl*a*adotoa**3._dl*EFTOmegaP<br>
+      EFTgpresdotq = EFTLambdadot +a2*a*adotoa**3*EFTOmegaPPP + 3._dl*a2*adotoa*Hdot*EFTOmegaPP&<br>
+                & +a*EFTOmegaP*Hdotdot +3._dl*a*adotoa*Hdot*EFTOmegaP +2._dl*a2*adotoa**3*EFTOmegaPP&<br>
+                & -2._dl*a*adotoa**3*EFTOmegaP<br>
+<br>
+     EFTpiB = EFTcdot +4._dl*adotoa*EFTc +8._dl*a2*adotoa*EFT_H0*(EFTAlpha1V**4+a*EFTAlpha1V**3*EFTAlpha1P)&<br>
+            & +4._dl*a2*k2*adotoa*(3._dl*EFTAlpha6V**2+a*EFTAlpha6V*EFTAlpha6P) +a*k2*(EFTAlpha4V**2&<br>
+            & +2._dl*EFTAlpha5V**2)/(2._dl*(1._dl+EFTOmegaV)-2._dl*EFTAlpha4V**2)*(adotoa*EFTOmegaP+EFT_H0*EFTAlpha2V**3)&<br>
+            & -a*(adotoa*EFTOmegaP+EFT_H0*EFTAlpha2V**3)/(4._dl*(1._dl+EFTOmegaV)+6._dl*EFTAlpha3V**2 +2._dl*EFTAlpha4V**2)*&<br>
+            &(-3._dl*(EFTgrhoQ + EFTgpresQ) -3._dl*a*adotoa**2*EFTOmegaP*(4._dl +Hdot/(adotoa**2)) -3._dl*a2*adotoa**2*EFTOmegaPP&<br>
+            & -3*a*adotoa*EFT_H0*(4._dl*EFTAlpha2V**3 +3._dl*a*EFTAlpha2V**2*EFTAlpha2P) -(9._dl*EFTAlpha3V**2-3._dl*EFTAlpha4V**2)*&<br>
+            &(Hdot-adotoa**2) +k2*(3._dl*EFTAlpha3V**2-EFTAlpha4V**2+4._dl*EFTAlpha5V**2))&<br>
+            & +1._dl/(1._dl+EFTOmegaV+2._dl*EFTAlpha5V**2)*(a*adotoa*EFTOmegaP+2._dl*adotoa*(EFTAlpha5V**2+2._dl*EFTAlpha5V*EFTAlpha5P)&<br>
+            & -(1._dl+EFTOmegaV)*(a*adotoa*EFTOmegaP+a*EFT_H0*EFTAlpha2V**3)/(2._dl*(1._dl+EFTOmegaV)+3._dl*EFTAlpha3V**2+EFTAlpha4V**2))*&<br>
+            &(-EFTc +1.5_dl*a*adotoa**2*EFTOmegaP-2._dl*a2*EFT_H0*EFTAlpha1V**4-4._dl*EFTAlpha6V**2*k2+1.5_dl*a*adotoa*EFT_H0*EFTAlpha2V**3)<br>
+<br>
+    EFTpiBfunction = EFTpiB<br>
+    return<br>
+    end function EFTpiBfunction<br>
+<br>
+    function EFTpiCfunction(a,k)<br>
+    use ModelParams<br>
+    implicit none<br>
+<br>
+        real(dl) EFTpiCfunction<br>
+        real(dl), intent(IN) :: a,k<br>
+        real(dl) a2,k2,grhob_t,grhor_t,grhoc_t,grhog_t,grhov_t, gpres, grho, adotoa,adotdota<br>
+        ! background quantities.<br>
+        real(dl) EFT_H0,Hdot, Hdotdot<br>
+        ! storage for EFT functions.<br>
+        real(dl) EFTOmegaV, EFTOmegaP, EFTOmegaPP, EFTOmegaPPP<br>
+        real(dl) EFTAlpha1V, EFTAlpha1P, EFTAlpha2V, EFTAlpha2P, EFTAlpha3V, EFTAlpha3P         <br>
+        real(dl) EFTAlpha4V, EFTAlpha4P, EFTAlpha4PP, EFTAlpha5V, EFTAlpha5P, EFTAlpha6V, EFTAlpha6P <br>
+        ! Background quantities.<br>
+        real(dl) EFTc, EFTLambda, EFTcdot, EFTLambdadot<br>
+        real(dl) EFTgrhoq, EFTgpresq, EFTgrhodotq, EFTgpresdotq<br>
+        ! perturbations quantities.<br>
+        real(dl) EFTpiC<br>
+<br>
+    a2 = a*a<br>
+    k2 = k*k<br>
+    EFT_H0 = (CP%h0/c_EFT)*1000._dl<br>
+    !  Compute expansion rate from: grho 8*pi*rho*a**2<br>
+    grhob_t=grhob/a<br>
+    grhoc_t=grhoc/a<br>
+    grhor_t=grhornomass/a2<br>
+    grhog_t=grhog/a2<br>
+    grhov_t=grhov*EFTw(a,2)<br>
+    grho=grhob_t+grhoc_t+grhor_t+grhog_t+grhov_t<br>
+  ! Compute FRW background quantities<br>
+      adotoa=sqrt(grho/3)<br>
+      gpres=+(grhog_t+grhor_t)/3._dl +EFTw(a,0)*grhov_t<br>
+      adotdota=(adotoa*adotoa-gpres)/2._dl<br>
+      Hdot =adotdota-adotoa**2._dl<br>
+      Hdotdot = 2._dl*adotoa*Hdot &<br>
+       & + 0.5_dl*adotoa*(grhob_t + grhoc_t + 8._dl*(grhog_t+grhor_t)/3._dl)&<br>
+       & + 0.5_dl*adotoa*grhov_t*((1._dl+EFTw(a,0))*(1._dl+3._dl*EFTw(a,0))-a*EFTw(a,1))<br>
+  ! Compute EFT background quantities<br>
+      EFTOmegaV   = EFTOmega(a,0)<br>
+      EFTOmegaP   = EFTOmega(a,1)<br>
+      EFTOmegaPP  = EFTOmega(a,2)<br>
+      EFTOmegaPPP = EFTOmega(a,3)<br>
+      EFTAlpha1V  = EFTAlpha1(a,0)<br>
+      EFTAlpha1P  = EFTAlpha1(a,1)<br>
+      EFTAlpha2V  = EFTAlpha2(a,0)<br>
+      EFTAlpha2P  = EFTAlpha2(a,1)<br>
+      EFTAlpha3V  = EFTAlpha3(a,0)<br>
+      EFTAlpha3P  = EFTAlpha3(a,1)<br>
+      EFTAlpha4V  = EFTAlpha4(a,0)<br>
+      EFTAlpha4P  = EFTAlpha4(a,1)<br>
+      EFTAlpha4PP = EFTAlpha4(a,2)<br>
+      EFTAlpha5V  = EFTAlpha5(a,0)<br>
+      EFTAlpha5P  = EFTAlpha5(a,1)<br>
+      EFTAlpha6V  = EFTAlpha6(a,0)<br>
+      EFTAlpha6P  = EFTAlpha6(a,1)<br>
+      if (CP%EFTflag==1) then<br>
+        !8*pi*G*c*a^2<br>
+        EFTc = (adotoa*adotoa - Hdot)*(EFTOmegaV + a*EFTOmegaP*0.5_dl) &<br>
+              & - 0.5_dl*a2*adotoa*adotoa*EFTOmegaPP&<br>
+              & + 0.5_dl*grhov_t*(1._dl+EFTw(a,0))<br>
+        !8*pi*G*Lambda*a^2<br>
+        EFTLambda = +EFTw(a,0)*grhov_t &<br>
+              &-EFTOmegaV*(2._dl*Hdot+adotoa**2._dl) &<br>
+              &-a*EFTOmegaP*(2._dl*adotoa**2._dl + Hdot) &<br>
+              &-a2*adotoa**2._dl*EFTOmegaPP<br>
+        !EFT C DOT: 8*pi*G*cdot*a^2<br>
+        EFTcdot = -EFTOmegaV*(Hdotdot-4._dl*adotoa*Hdot+2._dl*adotoa*adotoa*adotoa) &<br>
+              & + 0.5_dl*a*EFTOmegaP*(-Hdotdot+adotoa*Hdot+adotoa*adotoa*adotoa)&<br>
+              & +0.5_dl*a2*adotoa*EFTOmegaPP*(adotoa*adotoa-3._dl*Hdot)&<br>
+              & -0.5_dl*a*a2*adotoa*adotoa*adotoa*EFTOmegaPPP&<br>
+              & +0.5_dl*adotoa*grhov_t*(-3._dl*(1._dl+EFTw(a,0))**2 + a*EFTw(a,1))<br>
+        !EFT LAMBDA DOT: 8*pi*G*Ldot*a^2<br>
+        EFTLambdadot = -2._dl*EFTOmegaV*(Hdotdot-adotoa*Hdot-adotoa*adotoa*adotoa)&<br>
+              & - a*EFTOmegaP*(4._dl*adotoa*Hdot+Hdotdot)&<br>
+              & -a2*EFTOmegaPP*adotoa*(3._dl*Hdot+2._dl*adotoa*adotoa)&<br>
+              & -a*a2*EFTOmegaPPP*adotoa*adotoa*adotoa&<br>
+              & +grhov_t*adotoa*(a*EFTw(a,1)-3._dl*EFTw(a,0)*(1._dl+EFTw(a,0)))<br>
+      else if (CP%EFTflag==2) then<br>
+        EFTc = EFTcTemp(a,0)<br>
+        EFTcdot = EFTcTemp(a,1)<br>
+        EFTLambda = EFTLambdaTemp(a,0)<br>
+        EFTLambdadot = EFTLambdaTemp(a,1)<br>
+      end if<br>
+      EFTgrhoq = 2._dl*EFTc -EFTLambda -3._dl*a*adotoa*adotoa*EFTOmegaP<br>
+      EFTgpresq = EFTLambda + a2*adotoa*adotoa*EFTOmegaPP&<br>
+                & +a*EFTOmegaP*(Hdot + 2._dl*adotoa*adotoa)<br>
+      EFTgrhodotq = -3._dl*adotoa*(EFTgrhoq+EFTgpresq) + 3._dl*a*adotoa**3._dl*EFTOmegaP<br>
+      EFTgpresdotq = EFTLambdadot +a2*a*adotoa**3*EFTOmegaPPP + 3._dl*a2*adotoa*Hdot*EFTOmegaPP&<br>
+                & +a*EFTOmegaP*Hdotdot +3._dl*a*adotoa*Hdot*EFTOmegaP +2._dl*a2*adotoa**3*EFTOmegaPP&<br>
+                & -2._dl*a*adotoa**3*EFTOmegaP<br>
+<br>
+     EFTpiC = +adotoa*EFTcdot +(6._dl*adotoa**2-2._dl*Hdot)*EFTc +1.5_dl*a*adotoa*EFTOmegaP*(Hdotdot-2._dl*adotoa**3) &<br>
+            & +6._dl*a2*adotoa**2*EFT_H0**2*EFTAlpha1V**4 +2._dl*a2*Hdot*EFT_H0**2*EFTAlpha1V**4 &<br>
+            & +8._dl*a2*a*adotoa**2*EFT_H0**2*EFTAlpha1V**3*EFTAlpha1P +1.5_dl*(Hdot-adotoa**2)**2*(EFTAlpha4V**2+3._dl*EFTAlpha3V**2)&<br>
+            & +4.5_dl*adotoa*EFT_H0*a*(Hdot-adotoa**2)*(EFTAlpha2V**3+a*EFTAlpha2V**2*EFTAlpha2P)&<br>
+            & +0.5_dl*a*EFT_H0*EFTAlpha2V**3*(3._dl*Hdotdot -12._dl*Hdot*adotoa +6._dl*adotoa**3) &<br>
+            & -a*(adotoa*EFTOmegaP+EFT_H0*EFTAlpha2V**3)/(4._dl*(1._dl+EFTOmegaV)+6._dl*EFTAlpha3V**2 +2._dl*EFTAlpha4V**2)*&<br>
+            &(-3._dl*EFTgpresdotQ -3._dl*adotoa*(EFTgrhoQ +EFTgpresQ)-3._dl*a*adotoa**3*(a*EFTOmegaPP +6._dl*EFTOmegaP) &<br>
+            & -6._dl*a*adotoa*Hdot*EFTOmegaP +3._dl*(Hdotdot-2._dl*adotoa*Hdot)*(EFTAlpha4V**2+3._dl*EFTAlpha3V**2)&<br>
+            & +6._dl*adotoa*(Hdot-adotoa**2)*(3._dl*EFTAlpha3V**2+3._dl*a*EFTAlpha3V*EFTAlpha3P +EFTAlpha4V**2 +a*EFTAlpha4V*EFTAlpha4P)&<br>
+            & -3._dl*a*EFT_H0*(3._dl*adotoa**2*EFTAlpha2V**3 +Hdot*EFTAlpha2V**3 +3._dl*a*adotoa**2*EFTAlpha2V**2*EFTAlpha2P))&<br>
+            & +1._dl/(1._dl+EFTOmegaV+2._dl*EFTAlpha5V**2)*(a*adotoa*EFTOmegaP+2._dl*adotoa*(EFTAlpha5V**2+2._dl*a*EFTAlpha5V*EFTAlpha5P)&<br>
+            & -(1._dl+EFTOmegaV)*(a*adotoa*EFTOmegaP+a*EFT_H0*EFTAlpha2V**3)/(2._dl*(1._dl+EFTOmegaV)+3._dl*EFTAlpha3V**2+EFTAlpha4V**2))*&<br>
+            &(-0.5*EFTgrhodotQ -adotoa*EFTc +1.5_dl*a*adotoa*EFTOmegaP*(3._dl*adotoa**2-Hdot) -2._dl*a2*adotoa*EFT_H0**2*EFTAlpha1V**4&<br>
+            & -1.5_dl*a*EFT_H0*EFTAlpha2V**3*(Hdot-2._dl*adotoa**2) -3._dl*adotoa*(Hdot-adotoa**2)*(1.5_dl*EFTAlpha3V**2+EFTAlpha4V**2))<br>
+<br>
+    EFTpiCfunction = EFTpiC<br>
+    return<br>
+    end function EFTpiCfunction<br>
+<br>
+function EFTpiDfunction(a,k)<br>
+    use ModelParams<br>
+    implicit none<br>
+<br>
+        real(dl) EFTpiDfunction<br>
+        real(dl), intent(IN) :: a,k<br>
+        real(dl) a2,k2,grhob_t,grhor_t,grhoc_t,grhog_t,grhov_t, gpres, grho, adotoa,adotdota<br>
+        ! background quantities.<br>
+        real(dl) EFT_H0,Hdot, Hdotdot<br>
+        ! storage for EFT functions.<br>
+        real(dl) EFTOmegaV, EFTOmegaP, EFTOmegaPP, EFTOmegaPPP<br>
+        real(dl) EFTAlpha1V, EFTAlpha1P, EFTAlpha2V, EFTAlpha2P, EFTAlpha3V, EFTAlpha3P              <br>
+        real(dl) EFTAlpha4V, EFTAlpha4P, EFTAlpha4PP, EFTAlpha5V, EFTAlpha5P, EFTAlpha6V, EFTAlpha6P <br>
+        ! Background quantities.<br>
+        real(dl) EFTc, EFTLambda, EFTcdot, EFTLambdadot<br>
+        real(dl) EFTgrhoq, EFTgpresq, EFTgrhodotq, EFTgpresdotq<br>
+        ! perturbations quantities.<br>
+        real(dl) EFTpiD<br>
+<br>
+    a2 = a*a<br>
+    k2 = k*k<br>
+    EFT_H0 = (CP%h0/c_EFT)*1000._dl<br>
+    !  Compute expansion rate from: grho 8*pi*rho*a**2<br>
+    grhob_t=grhob/a<br>
+    grhoc_t=grhoc/a<br>
+    grhor_t=grhornomass/a2<br>
+    grhog_t=grhog/a2<br>
+    grhov_t=grhov*EFTw(a,2)<br>
+    grho=grhob_t+grhoc_t+grhor_t+grhog_t+grhov_t<br>
+  ! Compute FRW background quantities<br>
+      adotoa=sqrt(grho/3)<br>
+      gpres=+(grhog_t+grhor_t)/3._dl +EFTw(a,0)*grhov_t<br>
+      adotdota=(adotoa*adotoa-gpres)/2._dl<br>
+      Hdot =adotdota-adotoa**2._dl<br>
+      Hdotdot = 2._dl*adotoa*Hdot &<br>
+       & + 0.5_dl*adotoa*(grhob_t + grhoc_t + 8._dl*(grhog_t+grhor_t)/3._dl)&<br>
+       & + 0.5_dl*adotoa*grhov_t*((1._dl+EFTw(a,0))*(1._dl+3._dl*EFTw(a,0))-a*EFTw(a,1))<br>
+  ! Compute EFT background quantities<br>
+      EFTOmegaV   = EFTOmega(a,0)<br>
+      EFTOmegaP   = EFTOmega(a,1)<br>
+      EFTOmegaPP  = EFTOmega(a,2)<br>
+      EFTOmegaPPP = EFTOmega(a,3)<br>
+      EFTAlpha1V  = EFTAlpha1(a,0)<br>
+      EFTAlpha1P  = EFTAlpha1(a,1)<br>
+      EFTAlpha2V  = EFTAlpha2(a,0)<br>
+      EFTAlpha2P  = EFTAlpha2(a,1)<br>
+      EFTAlpha3V  = EFTAlpha3(a,0)<br>
+      EFTAlpha3P  = EFTAlpha3(a,1)<br>
+      EFTAlpha4V  = EFTAlpha4(a,0)<br>
+      EFTAlpha4P  = EFTAlpha4(a,1)<br>
+      EFTAlpha4PP = EFTAlpha4(a,2)<br>
+      EFTAlpha5V  = EFTAlpha5(a,0)<br>
+      EFTAlpha5P  = EFTAlpha5(a,1)<br>
+      EFTAlpha6V  = EFTAlpha6(a,0)<br>
+      EFTAlpha6P  = EFTAlpha6(a,1)<br>
+      if (CP%EFTflag==1) then<br>
+        !8*pi*G*c*a^2<br>
+        EFTc = (adotoa*adotoa - Hdot)*(EFTOmegaV + a*EFTOmegaP*0.5_dl) &<br>
+              & - 0.5_dl*a2*adotoa*adotoa*EFTOmegaPP&<br>
+              & + 0.5_dl*grhov_t*(1._dl+EFTw(a,0))<br>
+        !8*pi*G*Lambda*a^2<br>
+        EFTLambda = +EFTw(a,0)*grhov_t &<br>
+              &-EFTOmegaV*(2._dl*Hdot+adotoa**2._dl) &<br>
+              &-a*EFTOmegaP*(2._dl*adotoa**2._dl + Hdot) &<br>
+              &-a2*adotoa**2._dl*EFTOmegaPP<br>
+        !EFT C DOT: 8*pi*G*cdot*a^2<br>
+        EFTcdot = -EFTOmegaV*(Hdotdot-4._dl*adotoa*Hdot+2._dl*adotoa*adotoa*adotoa) &<br>
+              & + 0.5_dl*a*EFTOmegaP*(-Hdotdot+adotoa*Hdot+adotoa*adotoa*adotoa)&<br>
+              & +0.5_dl*a2*adotoa*EFTOmegaPP*(adotoa*adotoa-3._dl*Hdot)&<br>
+              & -0.5_dl*a*a2*adotoa*adotoa*adotoa*EFTOmegaPPP&<br>
+              & +0.5_dl*adotoa*grhov_t*(-3._dl*(1._dl+EFTw(a,0))**2 + a*EFTw(a,1))<br>
+        !EFT LAMBDA DOT: 8*pi*G*Ldot*a^2<br>
+        EFTLambdadot = -2._dl*EFTOmegaV*(Hdotdot-adotoa*Hdot-adotoa*adotoa*adotoa)&<br>
+              & - a*EFTOmegaP*(4._dl*adotoa*Hdot+Hdotdot)&<br>
+              & -a2*EFTOmegaPP*adotoa*(3._dl*Hdot+2._dl*adotoa*adotoa)&<br>
+              & -a*a2*EFTOmegaPPP*adotoa*adotoa*adotoa&<br>
+              & +grhov_t*adotoa*(a*EFTw(a,1)-3._dl*EFTw(a,0)*(1._dl+EFTw(a,0)))<br>
+      else if (CP%EFTflag==2) then<br>
+        EFTc = EFTcTemp(a,0)<br>
+        EFTcdot = EFTcTemp(a,1)<br>
+        EFTLambda = EFTLambdaTemp(a,0)<br>
+        EFTLambdadot = EFTLambdaTemp(a,1)<br>
+      end if<br>
+      EFTgrhoq = 2._dl*EFTc -EFTLambda -3._dl*a*adotoa*adotoa*EFTOmegaP<br>
+      EFTgpresq = EFTLambda + a2*adotoa*adotoa*EFTOmegaPP&<br>
+                & +a*EFTOmegaP*(Hdot + 2._dl*adotoa*adotoa)<br>
+      EFTgrhodotq = -3._dl*adotoa*(EFTgrhoq+EFTgpresq) + 3._dl*a*adotoa**3._dl*EFTOmegaP<br>
+      EFTgpresdotq = EFTLambdadot +a2*a*adotoa**3*EFTOmegaPPP + 3._dl*a2*adotoa*Hdot*EFTOmegaPP&<br>
+                & +a*EFTOmegaP*Hdotdot +3._dl*a*adotoa*Hdot*EFTOmegaP +2._dl*a2*adotoa**3*EFTOmegaPP&<br>
+                & -2._dl*a*adotoa**3*EFTOmegaP<br>
+<br>
+     EFTpiD = EFTc -0.5_dl*a*adotoa*EFT_H0*(EFTAlpha2V**3+3._dl*a*EFTAlpha2V**2*EFTAlpha2P) +(adotoa**2-Hdot)*(3._dl*EFTAlpha3V**2+EFTAlpha4V**2)&<br>
+            & +4._dl*a2*(Hdot*EFTAlpha6V**2 +2._dl*adotoa**2*EFTAlpha6V**2 +a*adotoa**2*EFTAlpha6V*EFTAlpha6P)&<br>
+            & +2._dl*(Hdot*EFTAlpha5V**2 +2._dl*a*adotoa**2*EFTAlpha5V*EFTAlpha5P)&<br>
+            & -a*(adotoa*EFTOmegaP+EFT_H0*EFTAlpha2V**3)/(4._dl*(1._dl+EFTOmegaV)+6._dl*EFTAlpha3V**2 +2._dl*EFTAlpha4V**2)*&<br>
+            &(-2._dl*a*adotoa*EFTOmegaP +4._dl*adotoa*EFTAlpha5V**2 -2._dl*adotoa*(3._dl*EFTAlpha3V**2 +3._dl*a*EFTAlpha3V*EFTAlpha3P &<br>
+            & +EFTAlpha4V**2 +a*EFTAlpha4V*EFTAlpha4P))&<br>
+            & +1._dl/(1._dl+EFTOmegaV+2._dl*EFTAlpha5V**2)*(a*adotoa*EFTOmegaP+2._dl*adotoa*(EFTAlpha5V**2+2._dl*a*EFTAlpha5V*EFTAlpha5P)&<br>
+            & -(1._dl+EFTOmegaV)*(a*adotoa*EFTOmegaP+a*EFT_H0*EFTAlpha2V**3)/(2._dl*(1._dl+EFTOmegaV)+3._dl*EFTAlpha3V**2+EFTAlpha4V**2))*&<br>
+            &(+0.5_dl*a*adotoa*EFTOmegaP -2._dl*adotoa*EFTAlpha5V**2 +0.5_dl*a*EFT_H0*EFTAlpha2V**3 +1.5_dl*adotoa*EFTAlpha3V**2&<br>
+            & -adotoa*EFTAlpha4V**2 -4._dl*adotoa*EFTAlpha6V**2)&<br>
+            & +(EFTAlpha4V**2 +2._dl*EFTAlpha5V**2)/(2._dl*(1._dl+EFTOmegaV) -2._dl*EFTAlpha4V**2)*(EFTgrhoQ +EFTgpresQ +a*adotoa**2*EFTOmegaP&<br>
+            & -EFTAlpha4V**2*(Hdot-adotoa**2) +a*adotoa*EFT_H0*EFTAlpha2V**3 +3._dl*EFTAlpha3V**2*(adotoa**2-Hdot))&<br>
+            & +k2*(+0.5_dl*EFTAlpha3V**2 +0.5_dl*EFTAlpha4V**2 &<br>
+            & +(EFTAlpha4V**2 +2._dl*EFTAlpha5V**2)/(2._dl*(1._dl+EFTOmegaV) -2._dl*EFTAlpha4V**2)*(EFTAlpha3V**2+EFTAlpha4V**2))<br>
+<br>
+    EFTpiDfunction = EFTpiD<br>
+    return<br>
+    end function EFTpiDfunction<br>
+<br>
+    ! EFTCAMB: now we take the numerical derivative of the functions appearing in the pi field equation<br>
+    !          to set up initial conditions. This part of code is called just once also because the accuracy<br>
+    !          of initial conditions is not an issue.<br>
+<br>
+    ! EFTCAMB: numerical derivative of the function A<br>
+     function EFTpiAdotFunction(a,k)<br>
+     implicit none<br>
+         real(dl) EFTpiAdotFunction, temp, err<br>
+         real(dl), intent(IN) :: a,k<br>
+     EFTpiAdotfunction = dfridr(EFTpiAfunction,a,k,0.1_dl*EFTturnonpi,err)<br>
+     return<br>
+     end function EFTpiAdotFunction<br>
+    ! EFTCAMB: numerical derivative of the function B<br>
+     function EFTpiBdotFunction(a,k)<br>
+     implicit none<br>
+         real(dl) EFTpiBdotFunction, temp, err<br>
+         real(dl), intent(IN) :: a,k<br>
+     EFTpiBdotfunction = dfridr(EFTpiBfunction,a,k,0.1_dl*EFTturnonpi,err)<br>
+     return<br>
+     end function EFTpiBdotFunction<br>
+    ! EFTCAMB: numerical derivative of the function C<br>
+     function EFTpiCdotFunction(a,k)<br>
+     implicit none<br>
+         real(dl) EFTpiCdotFunction, temp, err<br>
+         real(dl), intent(IN) :: a,k<br>
+     EFTpiCdotfunction = dfridr(EFTpiCfunction,a,k,0.1_dl*EFTturnonpi,err)<br>
+     return<br>
+     end function EFTpiCdotFunction<br>
+    ! EFTCAMB: numerical derivative of the function D<br>
+     function EFTpiDdotFunction(a,k)<br>
+     implicit none<br>
+         real(dl) EFTpiDdotFunction, temp, err<br>
+         real(dl), intent(IN) :: a,k<br>
+     EFTpiDdotfunction = dfridr(EFTpiDfunction,a,k,0.1_dl*EFTturnonpi,err)<br>
+     return<br>
+     end function EFTpiDdotFunction<br>
+<br>
+    ! EFTCAMB: algorithm to compute the numerical derivative. Modified to accept two function arguments.<br>
+    function dfridr(func,x,k,h,err)<br>
+    implicit none<br>
+<br>
+      integer,parameter :: ntab = 100<br>
+      real(dl) dfridr,err,h,x,k,func<br>
+      external func<br>
+<br>
+      real(dl), parameter :: CON=1.4_dl       ! decrease of the stepsize.<br>
+      real(dl), parameter :: CON2=CON*CON<br>
+      real(dl), parameter :: BIG=1.d+30<br>
+      real(dl), parameter :: SAFE=2._dl<br>
+<br>
+      integer i,j<br>
+      real(dl) errt, fac, hh<br>
+      real(dl), dimension(ntab,ntab) :: a<br>
+<br>
+      if (h.eq.0._dl) h = 1.d-8<br>
+<br>
+      hh=h<br>
+      a(1,1)=(func(x+hh,k)-func(x-hh,k))/(2.0_dl*hh)<br>
+      err=BIG<br>
+<br>
+      do 12 i=2,NTAB<br>
+        hh=hh/CON<br>
+        a(1,i)=(func(x+hh,k)-func(x-hh,k))/(2.0_dl*hh)<br>
+        fac=CON2<br>
+        do 11 j=2,i<br>
+          a(j,i)=(a(j-1,i)*fac-a(j-1,i-1))/(fac-1._dl)<br>
+          fac=CON2*fac<br>
+          errt=max(abs(a(j,i)-a(j-1,i)),abs(a(j,i)-a(j-1,i-1)))<br>
+          if (errt.le.err) then<br>
+            err=errt<br>
+            dfridr=a(j,i)<br>
+          endif<br>
+11      continue<br>
+        if(abs(a(i,i)-a(i-1,i-1)).ge.SAFE*err)return<br>
+12    continue<br>
+      return<br>
+    end function dfridr<br>
+! EFTCAMB MOD END<br>
+</span></div><br>
+
+<h2></h2>
+<div class="line"></div>
+<h2></h2>
+<!--end wrap-->
+<div id="spacing"></div>
+<!--hack for ie6 and ie7-->
+<center>
+    <div>-3-</div>
+    <div><a href="./guide_EFTCAMB_May14_p2.html"> - previous page -</a>
+</div>
+</div>
+</center>
+
+
+</BODY>
+</HTML>
